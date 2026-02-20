@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es-NI">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contáctanos en Xarcon Inmobiliaria para comprar, vender o publicar propiedades en Nicaragua." />
+  <title>XARCON INMOBILIARIA | Contacto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="Navegación principal">
+      <a class="logo" href="index.html">XARCON <span>INMOBILIARIA</span></a>
+      <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+      <ul class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="nosotros.html">Nosotros</a></li>
+        <li><a href="propiedades.html">Propiedades</a></li>
+        <li><a href="contacto.html" class="active">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="section container">
+    <section class="page-intro">
+      <h1>Contacto</h1>
+      <p>Estamos listos para ayudarte a vender, alquilar o encontrar tu propiedad ideal.</p>
+    </section>
+
+    <section class="contact-layout">
+      <!-- Formulario principal de captación -->
+      <form class="contact-form" action="#" method="post">
+        <label for="nombre">Nombre completo</label>
+        <input id="nombre" name="nombre" type="text" required />
+
+        <label for="correo">Correo electrónico</label>
+        <input id="correo" name="correo" type="email" required />
+
+        <label for="telefono">Teléfono</label>
+        <input id="telefono" name="telefono" type="tel" />
+
+        <label for="mensaje">Mensaje</label>
+        <textarea id="mensaje" name="mensaje" rows="5" placeholder="Cuéntanos qué tipo de propiedad te interesa..." required></textarea>
+
+        <button type="submit" class="btn btn-primary">Enviar consulta</button>
+      </form>
+
+      <!-- Métodos rápidos de contacto -->
+      <aside class="contact-info">
+        <h2>Atención directa</h2>
+        <p>También puedes escribirnos por WhatsApp para una respuesta más rápida.</p>
+        <a class="btn btn-whatsapp" href="https://wa.me/50588888888" target="_blank" rel="noopener noreferrer">Contactar por WhatsApp</a>
+
+        <h3>Síguenos en redes sociales</h3>
+        <ul>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">TikTok</a></li>
+        </ul>
+
+        <h3>Ubicación</h3>
+        <div class="map-placeholder" role="img" aria-label="Mapa de ubicación pendiente de integrar">
+          Espacio para integrar Google Maps
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <p>© <span id="year"></span> XARCON INMOBILIARIA. Todos los derechos reservados.</p>
+      <div class="social-links">
+        <a href="#" aria-label="Facebook de Xarcon Inmobiliaria">Facebook</a>
+        <a href="#" aria-label="Instagram de Xarcon Inmobiliaria">Instagram</a>
+        <a href="#" aria-label="TikTok de Xarcon Inmobiliaria">TikTok</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+/*
+  Estilos globales del sitio XARCON INMOBILIARIA
+  Diseño mobile-first, limpio, moderno y preparado para escalar.
+*/
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #f6f7f9;
+  --color-text: #1e1f24;
+  --color-muted: #5f6773;
+  --color-accent: #b71c2b;
+  --color-accent-dark: #911622;
+  --color-border: #e5e7eb;
+  --shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --radius: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.6;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.container {
+  width: min(1120px, 92%);
+  margin: 0 auto;
+}
+
+.section {
+  padding: 3.5rem 0;
+}
+
+.section-light {
+  background: var(--color-surface);
+}
+
+.page-intro {
+  margin-bottom: 2rem;
+}
+
+.page-intro h1,
+.section h2 {
+  margin: 0 0 0.75rem;
+  line-height: 1.2;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(8px);
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  gap: 1rem;
+}
+
+.logo {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.logo span {
+  color: var(--color-accent);
+}
+
+.menu-toggle {
+  border: 1px solid var(--color-border);
+  background: white;
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  font-size: 1.2rem;
+}
+
+.nav-links {
+  list-style: none;
+  position: absolute;
+  top: 72px;
+  left: 0;
+  right: 0;
+  display: none;
+  flex-direction: column;
+  margin: 0;
+  padding: 1rem;
+  background: white;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nav-links.open {
+  display: flex;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--color-text);
+  font-weight: 500;
+  padding: 0.5rem 0;
+}
+
+.nav-links a.active,
+.nav-links a:hover {
+  color: var(--color-accent);
+}
+
+.hero {
+  background: linear-gradient(rgba(18, 22, 28, 0.45), rgba(18, 22, 28, 0.45)),
+    url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1800&q=80') center/cover;
+  color: white;
+  min-height: 74vh;
+  display: flex;
+  align-items: center;
+}
+
+.hero-content {
+  max-width: 680px;
+}
+
+.hero-tag {
+  display: inline-block;
+  padding: 0.35rem 0.8rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.hero h1 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  margin: 0;
+}
+
+.hero p {
+  margin: 1rem 0 1.6rem;
+}
+
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--color-accent-dark);
+}
+
+.btn-outline {
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  background: transparent;
+}
+
+.btn-whatsapp {
+  background: #1f9d55;
+  color: white;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.text-link {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.property-grid {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.property-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.property-card img {
+  height: 220px;
+  width: 100%;
+  object-fit: cover;
+}
+
+.property-content {
+  padding: 1rem;
+}
+
+.property-content h2,
+.property-content h3 {
+  margin-top: 0;
+}
+
+.price {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.location {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.features-grid,
+.about-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.features-grid article,
+.about-card {
+  padding: 1.2rem;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.cta {
+  background: #12161c;
+  color: white;
+}
+
+.cta-content {
+  text-align: center;
+}
+
+.contact-layout {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.contact-form,
+.contact-info {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+}
+
+.contact-form label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  margin-bottom: 0.9rem;
+  padding: 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  font: inherit;
+}
+
+.map-placeholder {
+  border: 1px dashed var(--color-border);
+  border-radius: 10px;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.property-detail {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.detail-image {
+  border-radius: var(--radius);
+  min-height: 280px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.property-status {
+  display: inline-block;
+  color: white;
+  background: var(--color-accent);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  background: #fff;
+  padding: 1.2rem 0;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.7rem;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-links a {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Escala de layout para tablets y escritorio */
+@media (min-width: 768px) {
+  .menu-toggle {
+    display: none;
+  }
+
+  .nav-links {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    border: none;
+    padding: 0;
+    gap: 1rem;
+    background: transparent;
+  }
+
+  .property-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .features-grid,
+  .about-grid,
+  .contact-layout,
+  .property-detail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 1024px) {
+  .property-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
