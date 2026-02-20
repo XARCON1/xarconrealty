@@ -1,6 +1,7 @@
 const WHATSAPP_NUMBER = '50588889999';
 const ADMIN_STORAGE_KEYS = {
-  properties: 'xarcon-admin-properties',
+  properties: 'realEstateProperties',
+  legacyProperties: 'xarcon-admin-properties',
   overrides: 'xarcon-admin-property-overrides',
   deleted: 'xarcon-admin-deleted-properties'
 };
@@ -41,9 +42,26 @@ const normalizeProperty = (property) => {
   };
 };
 
+const getRawAdminProperties = () => {
+  const primary = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.properties) || '[]', []);
+  if (Array.isArray(primary) && primary.length) {
+    return primary;
+  }
+
+  const legacy = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.legacyProperties) || '[]', []);
+  if (Array.isArray(legacy) && legacy.length) {
+    localStorage.setItem(ADMIN_STORAGE_KEYS.properties, JSON.stringify(legacy));
+    return legacy;
+  }
+
+  return Array.isArray(primary) ? primary : [];
+};
+
 const getAdminProperties = () => {
-  const stored = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.properties) || '[]', []);
-  return Array.isArray(stored) ? stored.map(normalizeProperty) : [];
+  const stored = getRawAdminProperties();
+  const normalized = Array.isArray(stored) ? stored.map(normalizeProperty) : [];
+  console.debug('[XARCON] Admin properties loaded from localStorage:', normalized.length, normalized);
+  return normalized;
 };
 
 const getAdminOverrides = () => {
@@ -84,7 +102,16 @@ const getProperties = async () => {
   const adminOverrides = getAdminOverrides();
   const deletedIds = getDeletedPropertyIds();
 
-  return mergeProperties(baseProperties, adminProperties, adminOverrides, deletedIds);
+  console.debug('[XARCON] Source properties counts:', {
+    defaults: baseProperties.length,
+    admin: adminProperties.length,
+    overrides: Object.keys(adminOverrides).length,
+    deleted: deletedIds.size
+  });
+
+  const merged = mergeProperties(baseProperties, adminProperties, adminOverrides, deletedIds);
+  console.debug('[XARCON] Merged properties ready for render:', merged.length, merged);
+  return merged;
 };
 
 window.XARCON_STORAGE_KEYS = ADMIN_STORAGE_KEYS;
@@ -151,6 +178,7 @@ const setupHomeSections = async () => {
   }
 
   const properties = await getProperties();
+  console.debug('[XARCON] Home sections rendering properties:', properties.length);
   const latestProperties = [...properties].sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)).slice(0, 3);
 
   if (featuredNode) {
@@ -212,6 +240,15 @@ const setupPropertiesPage = async () => {
 
     listingNode.innerHTML = filtered.map(createPropertyCard).join('');
     resultCount.textContent = `${filtered.length} propiedad(es) encontrada(s)`;
+    console.debug('[XARCON] Properties page filter result:', {
+      total: properties.length,
+      filtered: filtered.length,
+      selectedType,
+      selectedLocation,
+      minBedrooms,
+      maxPrice,
+      text
+    });
   };
 
   [typeSelect, locationSelect, bedroomsSelect, priceInput, searchInput].forEach((element) => {
@@ -241,6 +278,7 @@ const setupPropertyDetail = async () => {
   const params = new URLSearchParams(window.location.search);
   const propertyId = params.get('id');
   const property = properties.find((item) => item.id === propertyId) || properties[0];
+  console.debug('[XARCON] Property detail requested:', { propertyId, resolvedPropertyId: property?.id });
 
   document.title = `XARCON INMOBILIARIA | ${property.title}`;
 
