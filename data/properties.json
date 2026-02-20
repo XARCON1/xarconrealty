@@ -15,7 +15,11 @@
     "bathrooms": 2,
     "featured": true,
     "opportunity": true,
-    "createdAt": "2026-01-10"
+    "createdAt": "2026-01-10",
+    "city": "Managua",
+    "address": "KM 8.5 Carretera Sur, Residencial Santo Domingo",
+    "latitude": 12.0714,
+    "longitude": -86.2504
   },
   {
     "id": "local-carretera-masaya",
@@ -33,7 +37,11 @@
     "bathrooms": 1,
     "featured": true,
     "opportunity": false,
-    "createdAt": "2026-02-08"
+    "createdAt": "2026-02-08",
+    "city": "Managua",
+    "address": "Km 10.5 Carretera a Masaya, Plaza Comercial",
+    "latitude": 12.0968,
+    "longitude": -86.2197
   },
   {
     "id": "terreno-carazo",
@@ -51,7 +59,11 @@
     "bathrooms": 0,
     "featured": false,
     "opportunity": true,
-    "createdAt": "2026-02-15"
+    "createdAt": "2026-02-15",
+    "city": "Jinotepe",
+    "address": "Salida Sur Jinotepe, Carazo",
+    "latitude": 11.8492,
+    "longitude": -86.1996
   },
   {
     "id": "casa-las-colinas",
@@ -69,7 +81,11 @@
     "bathrooms": 3,
     "featured": true,
     "opportunity": false,
-    "createdAt": "2026-02-18"
+    "createdAt": "2026-02-18",
+    "city": "Managua",
+    "address": "Residencial Las Colinas, Calle Principal",
+    "latitude": 12.0829,
+    "longitude": -86.2365
   },
   {
     "id": "local-leon-centro",
@@ -87,6 +103,10 @@
     "bathrooms": 2,
     "featured": false,
     "opportunity": true,
-    "createdAt": "2026-02-19"
+    "createdAt": "2026-02-19",
+    "city": "León",
+    "address": "Avenida Central, Centro Histórico de León",
+    "latitude": 12.4379,
+    "longitude": -86.878
   }
 ]
