@@ -3,17 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Xarcon Inmobiliaria en Nicaragua: compra, venta y promoción de propiedades con asesoría profesional." />
-  <meta name="keywords" content="inmobiliaria Nicaragua, casas en venta, apartamentos Managua, terrenos Nicaragua" />
-  <meta name="author" content="XARCON INMOBILIARIA" />
-  <title>XARCON INMOBILIARIA | Inicio</title>
+  <meta name="description" content="Xarcon Inmobiliaria: plataforma profesional para comprar, vender y alquilar propiedades en Nicaragua." />
+  <meta name="keywords" content="inmobiliaria Nicaragua, casas en venta, terrenos, locales comerciales" />
+  <meta property="og:title" content="Xarcon Inmobiliaria | Plataforma Inmobiliaria" />
+  <meta property="og:description" content="Encuentra propiedades destacadas y oportunidades de inversión con asesoría experta." />
+  <meta property="og:type" content="website" />
+  <title>XARCON INMOBILIARIA | Encuentra tu próxima propiedad</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "RealEstateAgent",
+      "name": "Xarcon Inmobiliaria",
+      "url": "https://xarconinmobiliaria.com",
+      "description": "Agencia inmobiliaria en Nicaragua especializada en compra, venta y alquiler.",
+      "areaServed": "Nicaragua"
+    }
+  </script>
 </head>
 <body>
-  <!-- Encabezado principal con navegación responsive -->
   <header class="site-header">
     <nav class="navbar container" aria-label="Navegación principal">
       <a class="logo" href="index.html">XARCON <span>INMOBILIARIA</span></a>
@@ -28,76 +39,52 @@
   </header>
 
   <main>
-    <!-- Hero principal -->
     <section class="hero">
-      <div class="container hero-content">
-        <p class="hero-tag">Mercado inmobiliario en Nicaragua</p>
-        <h1>Encuentra tu propiedad ideal con Xarcon Inmobiliaria</h1>
-        <p>Te ayudamos a descubrir casas, apartamentos y terrenos en las zonas con mayor potencial de inversión.</p>
-        <a class="btn btn-primary" href="propiedades.html">Ver Propiedades</a>
-      </div>
-    </section>
+      <div class="container hero-content reveal">
+        <p class="hero-tag">Confianza inmobiliaria en Nicaragua</p>
+        <h1>Tu próximo hogar o inversión empieza con una búsqueda inteligente</h1>
+        <p>Publicamos oportunidades reales para familias, inversionistas y empresas que desean crecer con seguridad.</p>
 
-    <!-- Propiedades destacadas para redes sociales -->
-    <section class="section container" id="destacadas">
-      <div class="section-header">
-        <h2>Propiedades destacadas</h2>
-        <a href="propiedades.html" class="text-link">Explorar catálogo completo</a>
-      </div>
-      <div class="property-grid">
-        <article class="property-card">
-          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80" alt="Casa moderna en Managua" loading="lazy" />
-          <div class="property-content">
-            <h3>Casa moderna en Managua</h3>
-            <p class="price">US$ 165,000</p>
-            <p class="location">Carretera a Masaya, Managua</p>
-            <a class="btn btn-outline" href="propiedades/propiedad-template.html">Ver detalles</a>
-          </div>
-        </article>
-        <article class="property-card">
-          <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=900&q=80" alt="Apartamento céntrico" loading="lazy" />
-          <div class="property-content">
-            <h3>Apartamento céntrico</h3>
-            <p class="price">US$ 850 / mes</p>
-            <p class="location">Centro de Managua</p>
-            <a class="btn btn-outline" href="propiedades/propiedad-template.html">Ver detalles</a>
-          </div>
-        </article>
-      </div>
-    </section>
+        <form class="hero-search" action="propiedades.html">
+          <input type="text" name="q" placeholder="Buscar por ciudad, zona o tipo de propiedad" aria-label="Buscar propiedad" />
+          <button class="btn btn-primary" type="submit">Buscar propiedades</button>
+        </form>
 
-    <!-- Razones de confianza -->
-    <section class="section section-light">
-      <div class="container">
-        <h2>¿Por qué elegirnos?</h2>
-        <div class="features-grid">
-          <article>
-            <h3>Asesoría local experta</h3>
-            <p>Conocemos el comportamiento del mercado inmobiliario nicaragüense y te orientamos en cada paso.</p>
-          </article>
-          <article>
-            <h3>Promoción digital efectiva</h3>
-            <p>Publicamos tus propiedades en redes sociales y canales estratégicos para generar más oportunidades de venta.</p>
-          </article>
-          <article>
-            <h3>Acompañamiento confiable</h3>
-            <p>Te brindamos un proceso transparente, profesional y enfocado en tus objetivos de inversión.</p>
-          </article>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="propiedades.html">Explorar catálogo</a>
+          <a class="btn btn-outline btn-light" href="contacto.html">Agendar asesoría</a>
         </div>
       </div>
     </section>
 
-    <!-- Llamado a la acción -->
-    <section class="section cta">
-      <div class="container cta-content">
-        <h2>¿Listo para publicar o encontrar tu próxima propiedad?</h2>
-        <p>Conversemos hoy y construyamos la mejor estrategia inmobiliaria para ti.</p>
-        <a href="contacto.html" class="btn btn-primary">Contactar ahora</a>
+    <section class="section container" id="destacadas">
+      <div class="section-header">
+        <h2>Propiedades destacadas</h2>
       </div>
+      <div id="featured-properties" class="property-grid" data-dynamic-error></div>
+    </section>
+
+    <section class="section section-light">
+      <div class="container">
+        <div class="section-header">
+          <h2>Últimas propiedades publicadas</h2>
+        </div>
+        <div id="latest-properties" class="property-grid" data-dynamic-error></div>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="section-header">
+        <h2>Oportunidades destacadas</h2>
+      </div>
+      <div id="opportunity-properties" class="property-grid" data-dynamic-error></div>
     </section>
   </main>
 
-  <!-- Pie de página -->
+  <a class="floating-whatsapp" href="https://wa.me/50588889999?text=Hola%20Xarcon%2C%20quiero%20asesor%C3%ADa%20inmobiliaria" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp">
+    WhatsApp
+  </a>
+
   <footer class="site-footer">
     <div class="container footer-content">
       <p>© <span id="year"></span> XARCON INMOBILIARIA. Todos los derechos reservados.</p>

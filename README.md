@@ -1,6 +1,6 @@
-# XARCON INMOBILIARIA - Sitio Web
+# XARCON INMOBILIARIA - Plataforma Web
 
-Sitio web inmobiliario moderno, responsive y optimizado para publicar propiedades en Nicaragua.
+Sitio web inmobiliario moderno, optimizado para captación de clientes y administración simple de propiedades mediante JSON.
 
 ## Estructura del proyecto
 
@@ -10,59 +10,81 @@ Sitio web inmobiliario moderno, responsive y optimizado para publicar propiedade
 ├── nosotros.html
 ├── propiedades.html
 ├── contacto.html
+├── data/
+│   └── properties.json
 ├── css/
 │   └── styles.css
 ├── js/
 │   └── main.js
-├── images/
 └── propiedades/
     └── propiedad-template.html
 ```
 
+## Cómo funciona el sistema JSON
+
+Toda la información de propiedades se carga desde `data/properties.json`.
+
+Cada propiedad debe incluir:
+
+- `id` (único, usado en URL del detalle)
+- `title`
+- `price` (número en USD)
+- `location`
+- `images` (arreglo de URLs)
+- `description`
+- `type` (`Casa`, `Terreno`, `Local`)
+- `bedrooms`
+- `bathrooms`
+- `featured` (true/false)
+- `opportunity` (true/false)
+- `createdAt` (fecha tipo `YYYY-MM-DD` para “últimas propiedades”)
+
 ## Cómo agregar nuevas propiedades
 
-### Opción 1: agregar tarjetas en `propiedades.html`
-1. Abre `propiedades.html`.
-2. Busca la sección con clase `property-grid`.
-3. Duplica un bloque `<article class="property-card">...</article>`.
-4. Actualiza:
-   - URL o ruta de imagen.
-   - Título de la propiedad.
-   - Precio.
-   - Ubicación.
-   - Descripción corta.
-   - Enlace del botón `Ver detalles`.
+1. Abre `data/properties.json`.
+2. Duplica un objeto existente dentro del arreglo.
+3. Cambia el `id` por uno único (ejemplo: `casa-managua-norte`).
+4. Actualiza título, precio, ubicación, descripción e imágenes.
+5. Define si será destacada (`featured`) u oportunidad (`opportunity`).
+6. Guarda el archivo.
 
-### Opción 2: crear una página de detalle individual
-1. Copia `propiedades/propiedad-template.html`.
-2. Renombra el archivo (por ejemplo: `casa-managua.html`).
-3. Edita los campos:
-   - Título principal.
-   - Precio.
-   - Ubicación.
-   - Descripción amplia.
-   - Características.
-   - Imagen principal.
-4. En `propiedades.html`, actualiza el enlace `Ver detalles` para apuntar al nuevo archivo.
+> Al guardar, la propiedad aparecerá automáticamente en:
+> - Buscador de `propiedades.html`
+> - Sección destacadas (si `featured: true`)
+> - Sección oportunidades (si `opportunity: true`)
+> - Sección últimas (según `createdAt` más reciente)
 
-## Cómo actualizar el sitio
+## Cómo gestionar listados
 
-1. Edita textos y secciones en los archivos HTML según necesidad.
-2. Ajusta estilos globales en `css/styles.css`.
-3. Si necesitas interacciones nuevas, agrega código en `js/main.js`.
-4. Guarda cambios y prueba el sitio localmente abriendo `index.html` en tu navegador.
+### Filtros disponibles en `propiedades.html`
 
-## Despliegue en GitHub Pages
+- Precio máximo
+- Tipo de propiedad
+- Ubicación
+- Habitaciones mínimas
+- Búsqueda por texto
 
-1. Sube el proyecto a un repositorio en GitHub.
-2. Ve a **Settings > Pages** del repositorio.
-3. En **Source**, selecciona la rama principal (`main` o `master`) y carpeta raíz (`/root`).
-4. Guarda la configuración.
-5. GitHub generará una URL pública del sitio.
+### Página de detalle
 
-## Recomendaciones SEO básicas
+La página `propiedades/propiedad-template.html` es dinámica:
 
-- Mantén actualizados los `title` y `meta description` de cada página.
-- Usa imágenes optimizadas para mejorar velocidad.
-- Añade texto descriptivo en `alt` para cada imagen.
-- Mantén enlaces internos claros entre páginas.
+- Se abre con parámetro `id`.
+- Ejemplo: `propiedades/propiedad-template.html?id=casa-santo-domingo`
+- Muestra galería de imágenes, datos principales, botones de contacto y área para mapa.
+
+## Desarrollo local
+
+Como se usa `fetch()` para cargar JSON, ejecuta el proyecto con un servidor local:
+
+```bash
+python -m http.server 8000
+```
+
+Luego abre `http://localhost:8000`.
+
+## SEO implementado
+
+- Títulos y descripciones por página.
+- Etiquetas Open Graph en inicio.
+- Estructura HTML semántica.
+- Datos estructurados tipo `RealEstateAgent` en `index.html`.

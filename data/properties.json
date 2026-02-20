@@ -1,0 +1,92 @@
+[
+  {
+    "id": "casa-santo-domingo",
+    "title": "Casa familiar en Santo Domingo",
+    "price": 198000,
+    "location": "Santo Domingo, Managua",
+    "images": [
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb3?auto=format&fit=crop&w=1400&q=80"
+    ],
+    "description": "Residencia moderna en zona de alta plusvalía, con patio amplio, terraza y seguridad 24/7.",
+    "type": "Casa",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "featured": true,
+    "opportunity": true,
+    "createdAt": "2026-01-10"
+  },
+  {
+    "id": "local-carretera-masaya",
+    "title": "Local comercial sobre Carretera a Masaya",
+    "price": 145000,
+    "location": "Carretera a Masaya, Managua",
+    "images": [
+      "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1604328698692-f76ea9498e76?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=80"
+    ],
+    "description": "Ideal para oficinas, showroom o clínica. Excelente visibilidad y alto tráfico vehicular.",
+    "type": "Local",
+    "bedrooms": 0,
+    "bathrooms": 1,
+    "featured": true,
+    "opportunity": false,
+    "createdAt": "2026-02-08"
+  },
+  {
+    "id": "terreno-carazo",
+    "title": "Terreno con potencial de desarrollo",
+    "price": 72000,
+    "location": "Jinotepe, Carazo",
+    "images": [
+      "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1400&q=80"
+    ],
+    "description": "1,200 varas cuadradas con topografía favorable para proyecto habitacional o bodega.",
+    "type": "Terreno",
+    "bedrooms": 0,
+    "bathrooms": 0,
+    "featured": false,
+    "opportunity": true,
+    "createdAt": "2026-02-15"
+  },
+  {
+    "id": "casa-las-colinas",
+    "title": "Casa contemporánea en Las Colinas",
+    "price": 265000,
+    "location": "Las Colinas, Managua",
+    "images": [
+      "https://images.unsplash.com/photo-1600607687644-c7f34b5cb6f4?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1600607687126-8a3414349a51?auto=format&fit=crop&w=1400&q=80"
+    ],
+    "description": "Diseño de lujo con acabados premium, piscina y excelente iluminación natural.",
+    "type": "Casa",
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "featured": true,
+    "opportunity": false,
+    "createdAt": "2026-02-18"
+  },
+  {
+    "id": "local-leon-centro",
+    "title": "Local para franquicia en León Centro",
+    "price": 89000,
+    "location": "Centro Histórico, León",
+    "images": [
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1517502474097-f9b30659dadb?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1400&q=80"
+    ],
+    "description": "Espacio estratégico para retail o gastronomía, con alto flujo peatonal todo el año.",
+    "type": "Local",
+    "bedrooms": 0,
+    "bathrooms": 2,
+    "featured": false,
+    "opportunity": true,
+    "createdAt": "2026-02-19"
+  }
+]

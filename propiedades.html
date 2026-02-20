@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Explora propiedades en venta y alquiler con Xarcon Inmobiliaria en Nicaragua." />
-  <title>XARCON INMOBILIARIA | Propiedades</title>
+  <meta name="description" content="Busca propiedades por precio, tipo, ubicación y habitaciones en Xarcon Inmobiliaria." />
+  <title>XARCON INMOBILIARIA | Buscador de Propiedades</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -25,47 +25,37 @@
   </header>
 
   <main class="section container">
-    <!-- Catálogo de propiedades en formato de tarjetas -->
     <section class="page-intro">
-      <h1>Propiedades disponibles</h1>
-      <p>Descubre oportunidades inmobiliarias seleccionadas para vivir, invertir o expandir tu negocio en Nicaragua.</p>
+      <h1>Buscador de propiedades</h1>
+      <p>Filtra tu búsqueda para encontrar rápidamente la propiedad ideal según tu presupuesto y necesidades.</p>
     </section>
 
-    <section class="property-grid" aria-label="Listado de propiedades">
-      <article class="property-card">
-        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=80" alt="Casa familiar en residencial privado" loading="lazy" />
-        <div class="property-content">
-          <h2>Casa familiar en residencial privado</h2>
-          <p class="price">US$ 198,000</p>
-          <p class="location">Santo Domingo, Managua</p>
-          <p>3 habitaciones, 2 baños, patio amplio y seguridad 24/7.</p>
-          <a class="btn btn-outline" href="propiedades/propiedad-template.html">Ver detalles</a>
-        </div>
-      </article>
-
-      <article class="property-card">
-        <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=900&q=80" alt="Apartamento moderno para ejecutivos" loading="lazy" />
-        <div class="property-content">
-          <h2>Apartamento moderno para ejecutivos</h2>
-          <p class="price">US$ 980 / mes</p>
-          <p class="location">Zona Universitaria, Managua</p>
-          <p>2 habitaciones, parqueo techado y acceso rápido a centros comerciales.</p>
-          <a class="btn btn-outline" href="propiedades/propiedad-template.html">Ver detalles</a>
-        </div>
-      </article>
-
-      <article class="property-card">
-        <img src="https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=900&q=80" alt="Terreno para desarrollo" loading="lazy" />
-        <div class="property-content">
-          <h2>Terreno con alto potencial comercial</h2>
-          <p class="price">US$ 72,000</p>
-          <p class="location">Carazo, Nicaragua</p>
-          <p>1,200 varas cuadradas, ideal para proyecto de inversión o vivienda campestre.</p>
-          <a class="btn btn-outline" href="propiedades/propiedad-template.html">Ver detalles</a>
-        </div>
-      </article>
+    <section class="filter-panel">
+      <input id="filter-search" type="search" placeholder="Buscar por título o descripción" aria-label="Buscar por texto" />
+      <input id="filter-price" type="number" min="0" step="1000" placeholder="Precio máximo (USD)" aria-label="Precio máximo" />
+      <select id="filter-type" aria-label="Tipo de propiedad">
+        <option value="">Tipo de propiedad</option>
+      </select>
+      <select id="filter-location" aria-label="Ubicación">
+        <option value="">Ubicación</option>
+      </select>
+      <select id="filter-bedrooms" aria-label="Habitaciones mínimas">
+        <option value="">Habitaciones mínimas</option>
+        <option value="1">1+</option>
+        <option value="2">2+</option>
+        <option value="3">3+</option>
+        <option value="4">4+</option>
+      </select>
+      <button class="btn btn-outline" id="reset-filters" type="button">Limpiar filtros</button>
     </section>
+
+    <p id="result-count" class="result-count"></p>
+    <section id="properties-list" class="property-grid" aria-label="Listado de propiedades" data-dynamic-error></section>
   </main>
+
+  <a class="floating-whatsapp" href="https://wa.me/50588889999?text=Hola%20Xarcon%2C%20quiero%20informaci%C3%B3n%20de%20propiedades" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp">
+    WhatsApp
+  </a>
 
   <footer class="site-footer">
     <div class="container footer-content">
