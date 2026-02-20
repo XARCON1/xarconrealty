@@ -1,6 +1,6 @@
 # XARCON INMOBILIARIA - Plataforma Web
 
-Sitio web inmobiliario moderno, optimizado para captación de clientes y administración simple de propiedades mediante JSON.
+Sitio web inmobiliario moderno, optimizado para captación de clientes y administración de propiedades vía JSON estático (compatible con GitHub Pages).
 
 ## Estructura del proyecto
 
@@ -11,86 +11,35 @@ Sitio web inmobiliario moderno, optimizado para captación de clientes y adminis
 ├── propiedades.html
 ├── propiedades-mapa.html
 ├── contacto.html
-├── data/
-│   └── properties.json
+├── admin.html
 ├── css/
 │   └── styles.css
 ├── js/
 │   ├── main.js
+│   ├── admin.js
 │   ├── map-page.js
-│   └── maps-config.js
+│   ├── maps-config.js
+│   └── properties.json
 └── propiedades/
     └── propiedad-template.html
 ```
 
-## Cómo funciona el sistema JSON
+## Fuente única de datos
 
-Toda la información de propiedades se carga desde `data/properties.json`.
+Toda la información pública se carga únicamente desde `js/properties.json`.
 
-Cada propiedad debe incluir:
+## Panel de administración
 
-- `id` (único, usado en URL del detalle)
-- `title`
-- `price` (número en USD)
-- `location`
-- `city`
-- `address`
-- `latitude`
-- `longitude`
-- `images` (arreglo de URLs)
-- `description`
-- `type` (`Casa`, `Terreno`, `Local`)
-- `bedrooms`
-- `bathrooms`
-- `featured` (true/false)
-- `opportunity` (true/false)
-- `createdAt` (fecha tipo `YYYY-MM-DD` para “últimas propiedades”)
+`admin.html` permite:
 
-## Cómo agregar nuevas propiedades
+- Agregar propiedades
+- Editar propiedades
+- Eliminar propiedades
+- Cargar imágenes por URL
+- Previsualizar JSON actualizado
+- Descargar `properties.json` con el botón **Download updated properties.json**
 
-1. Abre `data/properties.json`.
-2. Duplica un objeto existente dentro del arreglo.
-3. Cambia el `id` por uno único (ejemplo: `casa-managua-norte`).
-4. Actualiza título, precio, ubicación, descripción e imágenes.
-5. Define si será destacada (`featured`) u oportunidad (`opportunity`).
-6. Guarda el archivo.
-
-> Al guardar, la propiedad aparecerá automáticamente en:
-> - Buscador de `propiedades.html`
-> - Sección destacadas (si `featured: true`)
-> - Sección oportunidades (si `opportunity: true`)
-> - Sección últimas (según `createdAt` más reciente)
-
-## Cómo gestionar listados
-
-### Filtros disponibles en `propiedades.html`
-
-- Precio máximo
-- Tipo de propiedad
-- Ubicación
-- Habitaciones mínimas
-- Búsqueda por texto
-
-### Página de detalle
-
-La página `propiedades/propiedad-template.html` es dinámica:
-
-- Se abre con parámetro `id`.
-- Ejemplo: `propiedades/propiedad-template.html?id=casa-santo-domingo`
-- Muestra galería de imágenes, datos principales, botones de contacto y área para mapa.
-
-
-## Activar Google Maps
-
-1. Abre `js/maps-config.js`.
-2. Reemplaza `YOUR_GOOGLE_MAPS_API_KEY` por tu API key real.
-3. Asegúrate de habilitar Maps JavaScript API en Google Cloud.
-
-La página `propiedades-mapa.html` carga:
-- Mapa completo con filtros por ciudad, tipo y precio.
-- Marcadores automáticos de todas las propiedades con coordenadas.
-- Clustering de marcadores para alto volumen.
-- Editor de coordenadas para completar propiedades sin ubicación exacta.
+> Importante: el panel no escribe en servidor. Debes descargar el archivo y reemplazar `js/properties.json` en el repositorio.
 
 ## Desarrollo local
 
@@ -101,10 +50,3 @@ python -m http.server 8000
 ```
 
 Luego abre `http://localhost:8000`.
-
-## SEO implementado
-
-- Títulos y descripciones por página.
-- Etiquetas Open Graph en inicio.
-- Estructura HTML semántica.
-- Datos estructurados tipo `RealEstateAgent` en `index.html`.

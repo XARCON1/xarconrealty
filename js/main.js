@@ -1,11 +1,5 @@
 const WHATSAPP_NUMBER = '50588889999';
-const ADMIN_STORAGE_KEYS = {
-  properties: 'xarcon_properties',
-  primaryLegacyProperties: 'realEstateProperties',
-  legacyProperties: 'xarcon-admin-properties',
-  overrides: 'xarcon-admin-property-overrides',
-  deleted: 'xarcon-admin-deleted-properties'
-};
+const PROPERTIES_JSON_PATH = 'js/properties.json';
 
 const formatPrice = (value) =>
   new Intl.NumberFormat('es-NI', {
@@ -16,114 +10,46 @@ const formatPrice = (value) =>
 
 const getBasePath = () => (window.location.pathname.includes('/propiedades/') ? '../' : '');
 
-const safeParse = (value, fallback) => {
-  try {
-    const parsed = JSON.parse(value);
-    return parsed ?? fallback;
-  } catch (error) {
-    return fallback;
-  }
-};
-
 const normalizeProperty = (property) => {
-  const soldValue = property.status ? property.status === 'sold' : Boolean(property.sold);
-  const status = soldValue ? 'sold' : 'available';
+  const latitude = Number(property.latitude ?? property.lat);
+  const longitude = Number(property.longitude ?? property.lng);
 
   return {
     ...property,
+    id: property.id,
+    title: property.title || '',
     price: Number(property.price) || 0,
     images: Array.isArray(property.images) ? property.images.filter(Boolean) : [],
-    status,
-    sold: soldValue,
-    agent: property.agent || 'Equipo Xarcon',
+    location: property.location || '',
+    description: property.description || '',
+    type: property.type || 'Casa',
+    bedrooms: Number(property.bedrooms) || 0,
+    bathrooms: Number(property.bathrooms) || 0,
+    area: Number(property.area) || 0,
+    city: property.city || property.location || '',
+    address: property.address || property.location || '',
+    status: property.status === 'sold' || property.sold ? 'sold' : 'available',
+    sold: property.status === 'sold' || property.sold || false,
+    featured: Boolean(property.featured),
+    opportunity: Boolean(property.opportunity),
+    createdAt: property.createdAt || new Date().toISOString().slice(0, 10),
     dateAdded: property.dateAdded || property.createdAt || new Date().toISOString().slice(0, 10),
-    createdAt: property.dateAdded || property.createdAt || new Date().toISOString().slice(0, 10),
-    latitude: Number.isFinite(Number(property.latitude)) ? Number(property.latitude) : null,
-    longitude: Number.isFinite(Number(property.longitude)) ? Number(property.longitude) : null
+    agent: property.agent || 'Equipo Xarcon',
+    latitude: Number.isFinite(latitude) ? latitude : null,
+    longitude: Number.isFinite(longitude) ? longitude : null
   };
 };
 
-const getRawAdminProperties = () => {
-  const primary = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.properties) || '[]', []);
-  if (Array.isArray(primary) && primary.length) {
-    return primary;
-  }
-
-  const primaryLegacy = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.primaryLegacyProperties) || '[]', []);
-  if (Array.isArray(primaryLegacy) && primaryLegacy.length) {
-    localStorage.setItem(ADMIN_STORAGE_KEYS.properties, JSON.stringify(primaryLegacy));
-    return primaryLegacy;
-  }
-
-  const legacy = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.legacyProperties) || '[]', []);
-  if (Array.isArray(legacy) && legacy.length) {
-    localStorage.setItem(ADMIN_STORAGE_KEYS.properties, JSON.stringify(legacy));
-    return legacy;
-  }
-
-  return Array.isArray(primary) ? primary : [];
-};
-
-const getAdminProperties = () => {
-  const stored = getRawAdminProperties();
-  const normalized = Array.isArray(stored) ? stored.map(normalizeProperty) : [];
-  console.debug('[XARCON] Admin properties loaded from localStorage:', normalized.length, normalized);
-  return normalized;
-};
-
-const getAdminOverrides = () => {
-  const stored = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.overrides) || '{}', {});
-  return stored && typeof stored === 'object' ? stored : {};
-};
-
-const getDeletedPropertyIds = () => {
-  const stored = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.deleted) || '[]', []);
-  return Array.isArray(stored) ? new Set(stored) : new Set();
-};
-
-const mergeProperties = (baseProperties, adminProperties, overrides, deletedIds) => {
-  const mergedMap = new Map();
-
-  [...baseProperties, ...adminProperties].forEach((property) => {
-    mergedMap.set(property.id, normalizeProperty(property));
-  });
-
-  Object.entries(overrides).forEach(([propertyId, override]) => {
-    const source = mergedMap.get(propertyId);
-    if (!source) return;
-    mergedMap.set(propertyId, normalizeProperty({ ...source, ...override }));
-  });
-
-  return [...mergedMap.values()].filter((property) => !deletedIds.has(property.id));
-};
-
 const getProperties = async () => {
-  const response = await fetch(`${getBasePath()}data/properties.json`);
+  const response = await fetch(`${getBasePath()}${PROPERTIES_JSON_PATH}`);
   if (!response.ok) {
     throw new Error('No se pudieron cargar las propiedades.');
   }
 
   const basePropertiesRaw = await response.json();
-  const defaultProperties = Array.isArray(basePropertiesRaw) ? basePropertiesRaw.map(normalizeProperty) : [];
-  const savedProperties = getAdminProperties();
-  const allProperties = [...defaultProperties, ...savedProperties];
-  const adminOverrides = getAdminOverrides();
-  const deletedIds = getDeletedPropertyIds();
-
-  console.debug('[XARCON] Source properties counts:', {
-    defaults: defaultProperties.length,
-    admin: savedProperties.length,
-    combined: allProperties.length,
-    overrides: Object.keys(adminOverrides).length,
-    deleted: deletedIds.size
-  });
-
-  const merged = mergeProperties(defaultProperties, savedProperties, adminOverrides, deletedIds);
-  console.debug('[XARCON] Merged properties ready for render:', merged.length, merged);
-  return merged;
+  return Array.isArray(basePropertiesRaw) ? basePropertiesRaw.map(normalizeProperty) : [];
 };
 
-window.XARCON_STORAGE_KEYS = ADMIN_STORAGE_KEYS;
 window.getProperties = getProperties;
 window.normalizeProperty = normalizeProperty;
 
