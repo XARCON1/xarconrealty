@@ -1,4 +1,5 @@
 const WHATSAPP_NUMBER = '50588889999';
+const ADMIN_PROPERTIES_KEY = 'xarcon-admin-properties';
 
 const formatPrice = (value) =>
   new Intl.NumberFormat('es-NI', {
@@ -9,12 +10,23 @@ const formatPrice = (value) =>
 
 const getBasePath = () => (window.location.pathname.includes('/propiedades/') ? '../' : '');
 
+const getAdminProperties = () => {
+  try {
+    const stored = JSON.parse(localStorage.getItem(ADMIN_PROPERTIES_KEY) || '[]');
+    return Array.isArray(stored) ? stored : [];
+  } catch (error) {
+    return [];
+  }
+};
+
 const getProperties = async () => {
   const response = await fetch(`${getBasePath()}data/properties.json`);
   if (!response.ok) {
     throw new Error('No se pudieron cargar las propiedades.');
   }
-  return response.json();
+  const baseProperties = await response.json();
+  const adminProperties = getAdminProperties();
+  return adminProperties.length ? adminProperties : baseProperties;
 };
 
 const createPropertyCard = (property) => {
@@ -23,10 +35,11 @@ const createPropertyCard = (property) => {
   const locationText = property.address ? `${property.address}, ${property.city}` : property.location;
 
   return `
-    <article class="property-card reveal">
+    <article class="property-card reveal ${property.sold ? 'property-card-sold' : ''}">
       <img src="${property.images[0]}" alt="${property.title}" loading="lazy" />
       <div class="property-content">
         <p class="property-chip">${property.type}</p>
+        ${property.sold ? '<p class="sold-chip">Vendida</p>' : ''}
         <h3>${property.title}</h3>
         <p class="price">${formatPrice(property.price)}</p>
         <p class="location">${locationText}</p>
@@ -190,15 +203,20 @@ const setupPropertyDetail = async () => {
       <h1>${property.title}</h1>
       <p class="price">${formatPrice(property.price)}</p>
       <p class="location">${property.address ? `${property.address}, ${property.city}` : property.location}</p>
+      ${property.sold ? '<p class="sold-note">Esta propiedad ya se encuentra vendida.</p>' : ''}
       <p>${property.description}</p>
       <div class="detail-stats">
         <span><strong>Habitaciones:</strong> ${property.bedrooms}</span>
         <span><strong>Baños:</strong> ${property.bathrooms}</span>
       </div>
-      <div class="detail-cta-row">
-        <a href="../contacto.html" class="btn btn-primary">Solicitar información</a>
-        <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Hola%20Xarcon%2C%20quiero%20informaci%C3%B3n%20de%20${encodeURIComponent(property.title)}" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">Contactar por WhatsApp</a>
-      </div>
+      ${
+        property.sold
+          ? '<div class="detail-cta-row"><a href="../contacto.html" class="btn btn-outline">Solicitar propiedades similares</a></div>'
+          : `<div class="detail-cta-row">
+               <a href="../contacto.html" class="btn btn-primary">Solicitar información</a>
+               <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Hola%20Xarcon%2C%20quiero%20informaci%C3%B3n%20de%20${encodeURIComponent(property.title)}" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">Contactar por WhatsApp</a>
+             </div>`
+      }
       <div id="property-detail-map" class="detail-map" data-property-id="${property.id}" aria-label="Mapa de ubicación de la propiedad"></div>
     </section>
   `;
