@@ -1,5 +1,9 @@
 const WHATSAPP_NUMBER = '50588889999';
-const ADMIN_PROPERTIES_KEY = 'xarcon-admin-properties';
+const ADMIN_STORAGE_KEYS = {
+  properties: 'xarcon-admin-properties',
+  overrides: 'xarcon-admin-property-overrides',
+  deleted: 'xarcon-admin-deleted-properties'
+};
 
 const formatPrice = (value) =>
   new Intl.NumberFormat('es-NI', {
@@ -10,13 +14,62 @@ const formatPrice = (value) =>
 
 const getBasePath = () => (window.location.pathname.includes('/propiedades/') ? '../' : '');
 
-const getAdminProperties = () => {
+const safeParse = (value, fallback) => {
   try {
-    const stored = JSON.parse(localStorage.getItem(ADMIN_PROPERTIES_KEY) || '[]');
-    return Array.isArray(stored) ? stored : [];
+    const parsed = JSON.parse(value);
+    return parsed ?? fallback;
   } catch (error) {
-    return [];
+    return fallback;
   }
+};
+
+const normalizeProperty = (property) => {
+  const soldValue = property.status ? property.status === 'sold' : Boolean(property.sold);
+  const status = soldValue ? 'sold' : 'available';
+
+  return {
+    ...property,
+    price: Number(property.price) || 0,
+    images: Array.isArray(property.images) ? property.images.filter(Boolean) : [],
+    status,
+    sold: soldValue,
+    agent: property.agent || 'Equipo Xarcon',
+    dateAdded: property.dateAdded || property.createdAt || new Date().toISOString().slice(0, 10),
+    createdAt: property.dateAdded || property.createdAt || new Date().toISOString().slice(0, 10),
+    latitude: Number.isFinite(Number(property.latitude)) ? Number(property.latitude) : null,
+    longitude: Number.isFinite(Number(property.longitude)) ? Number(property.longitude) : null
+  };
+};
+
+const getAdminProperties = () => {
+  const stored = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.properties) || '[]', []);
+  return Array.isArray(stored) ? stored.map(normalizeProperty) : [];
+};
+
+const getAdminOverrides = () => {
+  const stored = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.overrides) || '{}', {});
+  return stored && typeof stored === 'object' ? stored : {};
+};
+
+const getDeletedPropertyIds = () => {
+  const stored = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.deleted) || '[]', []);
+  return Array.isArray(stored) ? new Set(stored) : new Set();
+};
+
+const mergeProperties = (baseProperties, adminProperties, overrides, deletedIds) => {
+  const mergedMap = new Map();
+
+  [...baseProperties, ...adminProperties].forEach((property) => {
+    mergedMap.set(property.id, normalizeProperty(property));
+  });
+
+  Object.entries(overrides).forEach(([propertyId, override]) => {
+    const source = mergedMap.get(propertyId);
+    if (!source) return;
+    mergedMap.set(propertyId, normalizeProperty({ ...source, ...override }));
+  });
+
+  return [...mergedMap.values()].filter((property) => !deletedIds.has(property.id));
 };
 
 const getProperties = async () => {
@@ -24,10 +77,19 @@ const getProperties = async () => {
   if (!response.ok) {
     throw new Error('No se pudieron cargar las propiedades.');
   }
-  const baseProperties = await response.json();
+
+  const basePropertiesRaw = await response.json();
+  const baseProperties = Array.isArray(basePropertiesRaw) ? basePropertiesRaw.map(normalizeProperty) : [];
   const adminProperties = getAdminProperties();
-  return adminProperties.length ? adminProperties : baseProperties;
+  const adminOverrides = getAdminOverrides();
+  const deletedIds = getDeletedPropertyIds();
+
+  return mergeProperties(baseProperties, adminProperties, adminOverrides, deletedIds);
 };
+
+window.XARCON_STORAGE_KEYS = ADMIN_STORAGE_KEYS;
+window.getProperties = getProperties;
+window.normalizeProperty = normalizeProperty;
 
 const createPropertyCard = (property) => {
   const bedrooms = property.bedrooms > 0 ? `${property.bedrooms} hab` : 'Uso flexible';
@@ -35,11 +97,11 @@ const createPropertyCard = (property) => {
   const locationText = property.address ? `${property.address}, ${property.city}` : property.location;
 
   return `
-    <article class="property-card reveal ${property.sold ? 'property-card-sold' : ''}">
+    <article class="property-card reveal ${property.status === 'sold' ? 'property-card-sold' : ''}">
       <img src="${property.images[0]}" alt="${property.title}" loading="lazy" />
       <div class="property-content">
         <p class="property-chip">${property.type}</p>
-        ${property.sold ? '<p class="sold-chip">Vendida</p>' : ''}
+        ${property.status === 'sold' ? '<p class="sold-chip">Vendida</p>' : ''}
         <h3>${property.title}</h3>
         <p class="price">${formatPrice(property.price)}</p>
         <p class="location">${locationText}</p>
@@ -89,7 +151,7 @@ const setupHomeSections = async () => {
   }
 
   const properties = await getProperties();
-  const latestProperties = [...properties].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 3);
+  const latestProperties = [...properties].sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)).slice(0, 3);
 
   if (featuredNode) {
     featuredNode.innerHTML = properties.filter((property) => property.featured).slice(0, 3).map(createPropertyCard).join('');
@@ -203,14 +265,15 @@ const setupPropertyDetail = async () => {
       <h1>${property.title}</h1>
       <p class="price">${formatPrice(property.price)}</p>
       <p class="location">${property.address ? `${property.address}, ${property.city}` : property.location}</p>
-      ${property.sold ? '<p class="sold-note">Esta propiedad ya se encuentra vendida.</p>' : ''}
+      ${property.status === 'sold' ? '<p class="sold-note">Esta propiedad ya se encuentra vendida.</p>' : ''}
       <p>${property.description}</p>
       <div class="detail-stats">
         <span><strong>Habitaciones:</strong> ${property.bedrooms}</span>
         <span><strong>Baños:</strong> ${property.bathrooms}</span>
+        <span><strong>Agente:</strong> ${property.agent}</span>
       </div>
       ${
-        property.sold
+        property.status === 'sold'
           ? '<div class="detail-cta-row"><a href="../contacto.html" class="btn btn-outline">Solicitar propiedades similares</a></div>'
           : `<div class="detail-cta-row">
                <a href="../contacto.html" class="btn btn-primary">Solicitar información</a>
