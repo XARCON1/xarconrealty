@@ -1,7 +1,8 @@
 const ADMIN_AUTH_KEY = 'xarcon-admin-auth';
 const ADMIN_CREDENTIALS_HASH_KEY = 'xarcon-admin-credentials-hash';
 const ADMIN_STORAGE_KEYS = window.XARCON_STORAGE_KEYS || {
-  properties: 'xarcon-admin-properties',
+  properties: 'realEstateProperties',
+  legacyProperties: 'xarcon-admin-properties',
   overrides: 'xarcon-admin-property-overrides',
   deleted: 'xarcon-admin-deleted-properties'
 };
@@ -32,7 +33,20 @@ const safeParse = (value, fallback) => {
   }
 };
 
-const getStoredProperties = () => safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.properties) || '[]', []);
+const getStoredProperties = () => {
+  const primary = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.properties) || '[]', []);
+  if (Array.isArray(primary) && primary.length) {
+    return primary;
+  }
+
+  const legacy = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.legacyProperties) || '[]', []);
+  if (Array.isArray(legacy) && legacy.length) {
+    localStorage.setItem(ADMIN_STORAGE_KEYS.properties, JSON.stringify(legacy));
+    return legacy;
+  }
+
+  return Array.isArray(primary) ? primary : [];
+};
 const getOverrides = () => safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.overrides) || '{}', {});
 const getDeletedIds = () => safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.deleted) || '[]', []);
 
@@ -162,6 +176,7 @@ const setupAdminDashboard = async () => {
 
   const renderProperties = async () => {
     const properties = await window.getProperties();
+    console.debug('[XARCON][ADMIN] Render inventory with merged properties:', properties.length);
     syncCounters(properties);
 
     propertyList.innerHTML = properties.length
@@ -200,6 +215,7 @@ const setupAdminDashboard = async () => {
       withoutDuplicate.unshift(normalized);
       setStoredProperties(withoutDuplicate);
       setDeletedIds([...deletedIds]);
+      console.debug('[XARCON][ADMIN] Property created and saved in localStorage:', normalized);
       return;
     }
 
@@ -211,9 +227,11 @@ const setupAdminDashboard = async () => {
         sold: normalized.status === 'sold'
       };
       setOverrides(overrides);
+      console.debug('[XARCON][ADMIN] Default property override saved:', normalized.id, overrides[normalized.id]);
     } else {
       const updated = storedProperties.map((item) => (item.id === normalized.id ? normalized : item));
       setStoredProperties(updated);
+      console.debug('[XARCON][ADMIN] Custom property updated:', normalized.id);
     }
 
     setDeletedIds([...deletedIds]);
@@ -280,6 +298,7 @@ const setupAdminDashboard = async () => {
     }
 
     saveProperty(property, mode);
+    console.debug('[XARCON][ADMIN] Form submit payload:', property);
     originMap = await getPropertyOriginMap();
     await renderProperties();
     resetForm();

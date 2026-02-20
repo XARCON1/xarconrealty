@@ -83,6 +83,10 @@ const setupPropertiesMapPage = async () => {
 
   const propertiesRaw = await getProperties();
   const properties = propertiesRaw.map(toGeoProperty);
+  console.debug('[XARCON][MAP] Properties loaded for map:', {
+    merged: propertiesRaw.length,
+    withCoordinates: properties.filter((property) => property.hasCoordinates).length
+  });
 
   [...new Set(properties.map((property) => property.city).filter(Boolean))].sort().forEach((city) => {
     citySelect.insertAdjacentHTML('beforeend', `<option value="${city}">${city}</option>`);
@@ -161,6 +165,13 @@ const setupPropertiesMapPage = async () => {
 
   const renderMarkers = () => {
     const filtered = getFilteredProperties();
+    console.debug('[XARCON][MAP] Marker render run:', {
+      total: properties.length,
+      filtered: filtered.length,
+      city: citySelect.value,
+      type: typeSelect.value,
+      price: Number(priceInput.value || Number.MAX_SAFE_INTEGER)
+    });
     renderPreviewList(filtered);
 
     if (!map) return;
