@@ -1,6 +1,7 @@
 const WHATSAPP_NUMBER = '50588889999';
 const ADMIN_STORAGE_KEYS = {
-  properties: 'realEstateProperties',
+  properties: 'xarcon_properties',
+  primaryLegacyProperties: 'realEstateProperties',
   legacyProperties: 'xarcon-admin-properties',
   overrides: 'xarcon-admin-property-overrides',
   deleted: 'xarcon-admin-deleted-properties'
@@ -46,6 +47,12 @@ const getRawAdminProperties = () => {
   const primary = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.properties) || '[]', []);
   if (Array.isArray(primary) && primary.length) {
     return primary;
+  }
+
+  const primaryLegacy = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.primaryLegacyProperties) || '[]', []);
+  if (Array.isArray(primaryLegacy) && primaryLegacy.length) {
+    localStorage.setItem(ADMIN_STORAGE_KEYS.properties, JSON.stringify(primaryLegacy));
+    return primaryLegacy;
   }
 
   const legacy = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.legacyProperties) || '[]', []);
@@ -97,19 +104,21 @@ const getProperties = async () => {
   }
 
   const basePropertiesRaw = await response.json();
-  const baseProperties = Array.isArray(basePropertiesRaw) ? basePropertiesRaw.map(normalizeProperty) : [];
-  const adminProperties = getAdminProperties();
+  const defaultProperties = Array.isArray(basePropertiesRaw) ? basePropertiesRaw.map(normalizeProperty) : [];
+  const savedProperties = getAdminProperties();
+  const allProperties = [...defaultProperties, ...savedProperties];
   const adminOverrides = getAdminOverrides();
   const deletedIds = getDeletedPropertyIds();
 
   console.debug('[XARCON] Source properties counts:', {
-    defaults: baseProperties.length,
-    admin: adminProperties.length,
+    defaults: defaultProperties.length,
+    admin: savedProperties.length,
+    combined: allProperties.length,
     overrides: Object.keys(adminOverrides).length,
     deleted: deletedIds.size
   });
 
-  const merged = mergeProperties(baseProperties, adminProperties, adminOverrides, deletedIds);
+  const merged = mergeProperties(defaultProperties, savedProperties, adminOverrides, deletedIds);
   console.debug('[XARCON] Merged properties ready for render:', merged.length, merged);
   return merged;
 };

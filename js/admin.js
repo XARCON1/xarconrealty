@@ -1,7 +1,8 @@
 const ADMIN_AUTH_KEY = 'xarcon-admin-auth';
 const ADMIN_CREDENTIALS_HASH_KEY = 'xarcon-admin-credentials-hash';
 const ADMIN_STORAGE_KEYS = window.XARCON_STORAGE_KEYS || {
-  properties: 'realEstateProperties',
+  properties: 'xarcon_properties',
+  primaryLegacyProperties: 'realEstateProperties',
   legacyProperties: 'xarcon-admin-properties',
   overrides: 'xarcon-admin-property-overrides',
   deleted: 'xarcon-admin-deleted-properties'
@@ -39,6 +40,12 @@ const getStoredProperties = () => {
     return primary;
   }
 
+  const primaryLegacy = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.primaryLegacyProperties) || '[]', []);
+  if (Array.isArray(primaryLegacy) && primaryLegacy.length) {
+    localStorage.setItem(ADMIN_STORAGE_KEYS.properties, JSON.stringify(primaryLegacy));
+    return primaryLegacy;
+  }
+
   const legacy = safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.legacyProperties) || '[]', []);
   if (Array.isArray(legacy) && legacy.length) {
     localStorage.setItem(ADMIN_STORAGE_KEYS.properties, JSON.stringify(legacy));
@@ -50,7 +57,7 @@ const getStoredProperties = () => {
 const getOverrides = () => safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.overrides) || '{}', {});
 const getDeletedIds = () => safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.deleted) || '[]', []);
 
-const setStoredProperties = (properties) => localStorage.setItem(ADMIN_STORAGE_KEYS.properties, JSON.stringify(properties));
+const setStoredProperties = (properties) => localStorage.setItem('xarcon_properties', JSON.stringify(properties));
 const setOverrides = (overrides) => localStorage.setItem(ADMIN_STORAGE_KEYS.overrides, JSON.stringify(overrides));
 const setDeletedIds = (ids) => localStorage.setItem(ADMIN_STORAGE_KEYS.deleted, JSON.stringify(ids));
 
@@ -61,6 +68,24 @@ const createSlug = (text) =>
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+
+const generateUniquePropertyId = (title, usedIds, preferredId = '') => {
+  const normalizedPreferredId = preferredId.trim();
+  if (normalizedPreferredId && !usedIds.has(normalizedPreferredId)) {
+    return normalizedPreferredId;
+  }
+
+  const baseSlug = createSlug(title) || 'propiedad';
+  let suffix = 1;
+  let candidate = baseSlug;
+
+  while (usedIds.has(candidate)) {
+    candidate = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
+
+  return candidate;
+};
 
 const fileToDataUrl = (file) =>
   new Promise((resolve, reject) => {
@@ -237,6 +262,23 @@ const setupAdminDashboard = async () => {
     setDeletedIds([...deletedIds]);
   };
 
+  const deletePropertyById = (propertyId) => {
+    const stored = getStoredProperties();
+    const overrides = getOverrides();
+    const deletedIds = new Set(getDeletedIds());
+    const isCustom = originMap[propertyId] === 'custom';
+
+    if (isCustom) {
+      setStoredProperties(stored.filter((item) => item.id !== propertyId));
+    } else {
+      delete overrides[propertyId];
+      setOverrides(overrides);
+      deletedIds.add(propertyId);
+    }
+
+    setDeletedIds([...deletedIds]);
+  };
+
   logoutButton.addEventListener('click', () => {
     sessionStorage.removeItem(ADMIN_AUTH_KEY);
     window.location.replace('index.html');
@@ -266,7 +308,16 @@ const setupAdminDashboard = async () => {
 
     const mode = propertyForm.dataset.mode || 'create';
     const title = fieldIds.title.value.trim();
-    const currentId = fieldIds.id.value || `${createSlug(title)}-${Date.now().toString().slice(-6)}`;
+    const requestedId = fieldIds.id.value.trim();
+    const usedIds = new Set((await window.getProperties()).map((item) => item.id));
+    if (propertyForm.dataset.mode === 'edit' && requestedId) {
+      usedIds.delete(requestedId);
+    }
+    const currentId = generateUniquePropertyId(title, usedIds, requestedId);
+
+    if (!requestedId && currentId !== createSlug(title)) {
+      formStatus.textContent = `ID autogenerado para evitar duplicados: ${currentId}`;
+    }
 
     const property = {
       id: currentId,
@@ -328,20 +379,8 @@ const setupAdminDashboard = async () => {
     }
 
     if (deleteId) {
-      const stored = getStoredProperties();
-      const overrides = getOverrides();
-      const deletedIds = new Set(getDeletedIds());
-      const isCustom = originMap[deleteId] === 'custom';
-
-      if (isCustom) {
-        setStoredProperties(stored.filter((item) => item.id !== deleteId));
-      } else {
-        delete overrides[deleteId];
-        setOverrides(overrides);
-        deletedIds.add(deleteId);
-      }
-
-      setDeletedIds([...deletedIds]);
+      deletePropertyById(deleteId);
+      originMap = await getPropertyOriginMap();
       await renderProperties();
       formStatus.textContent = 'Propiedad eliminada del catálogo público.';
     }
