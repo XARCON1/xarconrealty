@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es-NI">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Properties Map de Xarcon Inmobiliaria con filtros por ciudad, precio y tipo de propiedad." />
+  <meta name="xarcon-maps-key" content="" />
+  <title>XARCON INMOBILIARIA | Properties Map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="map-page-body">
+  <header class="site-header">
+    <nav class="navbar container" aria-label="Navegación principal">
+      <a class="logo" href="index.html">XARCON <span>INMOBILIARIA</span></a>
+      <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+      <ul class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="nosotros.html">Nosotros</a></li>
+        <li><a href="propiedades.html">Propiedades</a></li>
+        <li><a href="propiedades-mapa.html" class="active">Mapa</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="map-layout">
+    <aside id="map-control-panel" class="map-control-panel open">
+      <div class="map-panel-header">
+        <h1>Properties Map</h1>
+        <button id="map-filter-toggle" class="btn btn-outline" type="button">Filtros</button>
+      </div>
+      <p id="map-status" class="result-count">Cargando mapa...</p>
+      <div class="filter-panel map-filter-panel">
+        <select id="map-filter-city" aria-label="Filtrar por ciudad">
+          <option value="">Todas las ciudades</option>
+        </select>
+        <select id="map-filter-type" aria-label="Filtrar por tipo">
+          <option value="">Todos los tipos</option>
+        </select>
+        <input id="map-filter-price" type="number" min="0" step="1000" placeholder="Precio máximo" aria-label="Precio máximo" />
+        <button class="btn btn-outline" id="map-reset-filters" type="button">Limpiar</button>
+      </div>
+
+      <p id="map-filter-total" class="result-count"></p>
+      <section id="map-preview-list" class="map-preview-list" aria-label="Vista previa de propiedades"></section>
+
+      <section class="coordinate-editor">
+        <h2>Editor de coordenadas</h2>
+        <p>Si falta ubicación exacta, complétala aquí para publicar el marcador automáticamente.</p>
+        <form id="coordinate-editor-form" class="coordinate-form">
+          <label for="editor-property-id">Propiedad</label>
+          <select id="editor-property-id" required></select>
+          <label for="editor-city">Ciudad</label>
+          <input id="editor-city" required />
+          <label for="editor-address">Dirección</label>
+          <input id="editor-address" required />
+          <label for="editor-latitude">Latitud</label>
+          <input id="editor-latitude" type="number" step="any" required />
+          <label for="editor-longitude">Longitud</label>
+          <input id="editor-longitude" type="number" step="any" required />
+          <button class="btn btn-primary" type="submit">Guardar coordenadas</button>
+        </form>
+      </section>
+    </aside>
+
+    <section class="map-stage" aria-label="Mapa de propiedades">
+      <div id="properties-map" class="properties-map-canvas"></div>
+    </section>
+  </main>
+
+  <script src="js/maps-config.js"></script>
+  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+  <script src="js/map-page.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

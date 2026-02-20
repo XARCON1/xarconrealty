@@ -20,6 +20,7 @@ const getProperties = async () => {
 const createPropertyCard = (property) => {
   const bedrooms = property.bedrooms > 0 ? `${property.bedrooms} hab` : 'Uso flexible';
   const detailHref = `${getBasePath()}propiedades/propiedad-template.html?id=${property.id}`;
+  const locationText = property.address ? `${property.address}, ${property.city}` : property.location;
 
   return `
     <article class="property-card reveal">
@@ -28,7 +29,7 @@ const createPropertyCard = (property) => {
         <p class="property-chip">${property.type}</p>
         <h3>${property.title}</h3>
         <p class="price">${formatPrice(property.price)}</p>
-        <p class="location">${property.location}</p>
+        <p class="location">${locationText}</p>
         <p>${property.description}</p>
         <div class="property-meta">
           <span>${bedrooms}</span>
@@ -188,7 +189,7 @@ const setupPropertyDetail = async () => {
       <p class="property-chip">${property.type}</p>
       <h1>${property.title}</h1>
       <p class="price">${formatPrice(property.price)}</p>
-      <p class="location">${property.location}</p>
+      <p class="location">${property.address ? `${property.address}, ${property.city}` : property.location}</p>
       <p>${property.description}</p>
       <div class="detail-stats">
         <span><strong>Habitaciones:</strong> ${property.bedrooms}</span>
@@ -198,9 +199,7 @@ const setupPropertyDetail = async () => {
         <a href="../contacto.html" class="btn btn-primary">Solicitar información</a>
         <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Hola%20Xarcon%2C%20quiero%20informaci%C3%B3n%20de%20${encodeURIComponent(property.title)}" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">Contactar por WhatsApp</a>
       </div>
-      <div class="map-placeholder" role="img" aria-label="Mapa referencial de ubicación">
-        Mapa de ubicación (integración Google Maps lista para activar)
-      </div>
+      <div id="property-detail-map" class="detail-map" data-property-id="${property.id}" aria-label="Mapa de ubicación de la propiedad"></div>
     </section>
   `;
 
@@ -236,6 +235,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     await Promise.all([setupHomeSections(), setupPropertiesPage(), setupPropertyDetail()]);
+    if (typeof window.setupPropertiesMapPage === 'function') {
+      await window.setupPropertiesMapPage();
+    }
+    if (typeof window.setupPropertyDetailMap === 'function') {
+      await window.setupPropertyDetailMap();
+    }
   } catch (error) {
     const dynamicNodes = document.querySelectorAll('[data-dynamic-error]');
     dynamicNodes.forEach((node) => {

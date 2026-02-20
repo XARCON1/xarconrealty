@@ -9,13 +9,16 @@ Sitio web inmobiliario moderno, optimizado para captación de clientes y adminis
 ├── index.html
 ├── nosotros.html
 ├── propiedades.html
+├── propiedades-mapa.html
 ├── contacto.html
 ├── data/
 │   └── properties.json
 ├── css/
 │   └── styles.css
 ├── js/
-│   └── main.js
+│   ├── main.js
+│   ├── map-page.js
+│   └── maps-config.js
 └── propiedades/
     └── propiedad-template.html
 ```
@@ -30,6 +33,10 @@ Cada propiedad debe incluir:
 - `title`
 - `price` (número en USD)
 - `location`
+- `city`
+- `address`
+- `latitude`
+- `longitude`
 - `images` (arreglo de URLs)
 - `description`
 - `type` (`Casa`, `Terreno`, `Local`)
@@ -71,6 +78,19 @@ La página `propiedades/propiedad-template.html` es dinámica:
 - Se abre con parámetro `id`.
 - Ejemplo: `propiedades/propiedad-template.html?id=casa-santo-domingo`
 - Muestra galería de imágenes, datos principales, botones de contacto y área para mapa.
+
+
+## Activar Google Maps
+
+1. Abre `js/maps-config.js`.
+2. Reemplaza `YOUR_GOOGLE_MAPS_API_KEY` por tu API key real.
+3. Asegúrate de habilitar Maps JavaScript API en Google Cloud.
+
+La página `propiedades-mapa.html` carga:
+- Mapa completo con filtros por ciudad, tipo y precio.
+- Marcadores automáticos de todas las propiedades con coordenadas.
+- Clustering de marcadores para alto volumen.
+- Editor de coordenadas para completar propiedades sin ubicación exacta.
 
 ## Desarrollo local
 

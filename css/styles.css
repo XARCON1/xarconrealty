@@ -241,3 +241,145 @@ img { max-width: 100%; display: block; }
   .property-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .filter-panel { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
+
+.detail-map {
+  min-height: 280px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.map-page-body {
+  background: #f0f3fb;
+}
+
+.map-layout {
+  min-height: calc(100vh - 72px);
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.map-control-panel {
+  background: #fff;
+  border-right: 1px solid var(--color-border);
+  padding: 1rem;
+  max-height: none;
+  overflow: visible;
+}
+
+.map-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem;
+}
+
+.map-filter-panel {
+  margin-bottom: .7rem;
+}
+
+.map-stage {
+  position: relative;
+  min-height: 62vh;
+}
+
+.properties-map-canvas {
+  width: 100%;
+  height: 100%;
+  min-height: 62vh;
+}
+
+.map-preview-list {
+  display: grid;
+  gap: .8rem;
+  margin-bottom: 1.2rem;
+}
+
+.map-property-preview {
+  display: grid;
+  grid-template-columns: 95px 1fr;
+  gap: .7rem;
+  background: var(--color-surface-alt);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  padding: .45rem;
+}
+
+.map-property-preview img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.coordinate-editor {
+  border-top: 1px solid var(--color-border);
+  padding-top: 1rem;
+}
+
+.coordinate-form {
+  display: grid;
+  gap: .45rem;
+}
+
+.coordinate-form input,
+.coordinate-form select {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.65rem;
+  font: inherit;
+}
+
+.map-info-card {
+  width: 240px;
+}
+
+.map-info-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: .5rem;
+}
+
+.map-info-content h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+@media (max-width: 900px) {
+  .map-control-panel {
+    max-height: 70px;
+    overflow: hidden;
+    transition: max-height .35s ease;
+  }
+
+  .map-control-panel.open {
+    max-height: 75vh;
+    overflow: auto;
+  }
+
+  .map-panel-header .btn {
+    display: inline-block;
+  }
+}
+
+@media (min-width: 901px) {
+  .map-layout {
+    grid-template-columns: 390px 1fr;
+  }
+
+  .map-stage,
+  .properties-map-canvas {
+    min-height: calc(100vh - 72px);
+  }
+
+  .map-panel-header .btn {
+    display: none;
+  }
+
+  .map-control-panel {
+    max-height: calc(100vh - 72px);
+    overflow: auto;
+  }
+}
