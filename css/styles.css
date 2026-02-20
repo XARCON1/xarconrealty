@@ -564,6 +564,22 @@ img { max-width: 100%; display: block; }
   margin: .6rem 0 0;
 }
 
+
+.admin-actions-row {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.admin-json-panel textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: .8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  background: #f8fafc;
+}
+
 @media (max-width: 991px) {
   .admin-table {
     min-width: 640px;

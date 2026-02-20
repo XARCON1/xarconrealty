@@ -1,6 +1,5 @@
 const MAPS_DEFAULT_CENTER = { lat: 12.1149926, lng: -86.2361744 };
 const MAPS_DEFAULT_ZOOM = 9;
-const PROPERTY_OVERRIDES_KEY = 'xarcon-property-overrides';
 
 const getMapApiKey = () => window.XARCON_MAPS_API_KEY || document.querySelector('meta[name="xarcon-maps-key"]')?.content || '';
 
@@ -33,32 +32,14 @@ const loadGoogleMapsApi = () => {
   });
 };
 
-const getPropertyOverrides = () => {
-  try {
-    return JSON.parse(localStorage.getItem(PROPERTY_OVERRIDES_KEY) || '{}');
-  } catch (error) {
-    return {};
-  }
-};
-
-const savePropertyOverrides = (overrides) => {
-  localStorage.setItem(PROPERTY_OVERRIDES_KEY, JSON.stringify(overrides));
-};
-
-const toGeoProperty = (property) => {
-  const overrides = getPropertyOverrides()[property.id] || {};
-  const latitude = Number(overrides.latitude ?? property.latitude);
-  const longitude = Number(overrides.longitude ?? property.longitude);
-
-  return {
-    ...property,
-    city: overrides.city || property.city,
-    address: overrides.address || property.address,
-    latitude,
-    longitude,
-    hasCoordinates: Number.isFinite(latitude) && Number.isFinite(longitude)
-  };
-};
+const toGeoProperty = (property) => ({
+  ...property,
+  city: property.city || property.location,
+  address: property.address || property.location,
+  latitude: Number(property.latitude),
+  longitude: Number(property.longitude),
+  hasCoordinates: Number.isFinite(Number(property.latitude)) && Number.isFinite(Number(property.longitude))
+});
 
 const setupPropertiesMapPage = async () => {
   const mapNode = document.getElementById('properties-map');
@@ -74,19 +55,8 @@ const setupPropertiesMapPage = async () => {
   const filterToggle = document.getElementById('map-filter-toggle');
   const panelNode = document.getElementById('map-control-panel');
 
-  const editorForm = document.getElementById('coordinate-editor-form');
-  const editorProperty = document.getElementById('editor-property-id');
-  const editorCity = document.getElementById('editor-city');
-  const editorAddress = document.getElementById('editor-address');
-  const editorLat = document.getElementById('editor-latitude');
-  const editorLng = document.getElementById('editor-longitude');
-
   const propertiesRaw = await getProperties();
   const properties = propertiesRaw.map(toGeoProperty);
-  console.debug('[XARCON][MAP] Properties loaded for map:', {
-    merged: propertiesRaw.length,
-    withCoordinates: properties.filter((property) => property.hasCoordinates).length
-  });
 
   [...new Set(properties.map((property) => property.city).filter(Boolean))].sort().forEach((city) => {
     citySelect.insertAdjacentHTML('beforeend', `<option value="${city}">${city}</option>`);
@@ -95,22 +65,6 @@ const setupPropertiesMapPage = async () => {
   [...new Set(properties.map((property) => property.type))].sort().forEach((type) => {
     typeSelect.insertAdjacentHTML('beforeend', `<option value="${type}">${type}</option>`);
   });
-
-  editorProperty.innerHTML = properties
-    .map((property) => `<option value="${property.id}">${property.title}</option>`)
-    .join('');
-
-  const syncEditor = () => {
-    const selected = properties.find((property) => property.id === editorProperty.value) || properties[0];
-    if (!selected) return;
-    editorCity.value = selected.city || '';
-    editorAddress.value = selected.address || '';
-    editorLat.value = Number.isFinite(selected.latitude) ? String(selected.latitude) : '';
-    editorLng.value = Number.isFinite(selected.longitude) ? String(selected.longitude) : '';
-  };
-
-  syncEditor();
-  editorProperty.addEventListener('change', syncEditor);
 
   let map;
   let infoWindow;
@@ -165,13 +119,6 @@ const setupPropertiesMapPage = async () => {
 
   const renderMarkers = () => {
     const filtered = getFilteredProperties();
-    console.debug('[XARCON][MAP] Marker render run:', {
-      total: properties.length,
-      filtered: filtered.length,
-      city: citySelect.value,
-      type: typeSelect.value,
-      price: Number(priceInput.value || Number.MAX_SAFE_INTEGER)
-    });
     renderPreviewList(filtered);
 
     if (!map) return;
@@ -252,29 +199,6 @@ const setupPropertiesMapPage = async () => {
 
   filterToggle.addEventListener('click', () => {
     panelNode.classList.toggle('open');
-  });
-
-  editorForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    const propertyId = editorProperty.value;
-    const overrides = getPropertyOverrides();
-    overrides[propertyId] = {
-      city: editorCity.value.trim(),
-      address: editorAddress.value.trim(),
-      latitude: Number(editorLat.value),
-      longitude: Number(editorLng.value)
-    };
-
-    savePropertyOverrides(overrides);
-
-    const selectedIndex = properties.findIndex((property) => property.id === propertyId);
-    if (selectedIndex >= 0) {
-      properties[selectedIndex] = toGeoProperty(properties[selectedIndex]);
-    }
-
-    renderMarkers();
-    statusNode.textContent = 'Ubicación guardada correctamente para la propiedad seleccionada.';
   });
 };
 
