@@ -383,3 +383,159 @@ img { max-width: 100%; display: block; }
     overflow: auto;
   }
 }
+
+.sold-chip {
+  display: inline-block;
+  margin-left: .4rem;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 700;
+  padding: .2rem .6rem;
+}
+
+.sold-note {
+  color: #991b1b;
+  font-weight: 600;
+}
+
+.property-card-sold {
+  opacity: .92;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.admin-auth-card,
+.admin-panel {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 1.2rem;
+}
+
+.admin-dashboard {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-form-grid {
+  display: grid;
+  gap: .75rem;
+}
+
+.admin-form-grid label {
+  font-weight: 600;
+  display: grid;
+  gap: .25rem;
+}
+
+.admin-form-grid input,
+.admin-form-grid select,
+.admin-form-grid textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: .7rem;
+  font: inherit;
+}
+
+.admin-full-width {
+  grid-column: 1 / -1;
+}
+
+.checkbox {
+  display: flex !important;
+  align-items: center;
+  gap: .5rem;
+  font-weight: 500 !important;
+}
+
+.checkbox input {
+  width: auto;
+}
+
+.admin-image-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: .5rem;
+}
+
+.admin-image-preview img {
+  border-radius: 10px;
+  height: 90px;
+  width: 100%;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+}
+
+.admin-property-list {
+  display: grid;
+  gap: .7rem;
+}
+
+.admin-list-card {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: .6rem;
+  display: grid;
+  gap: .7rem;
+  background: var(--color-surface-alt);
+}
+
+.admin-list-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.admin-list-card p {
+  margin: .25rem 0;
+}
+
+.admin-list-actions {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.admin-help,
+.admin-status {
+  margin: .6rem 0 0;
+}
+
+@media (min-width: 992px) {
+  .admin-layout {
+    grid-template-columns: 1.2fr .8fr;
+  }
+
+  .admin-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-list-card {
+    grid-template-columns: 120px 1fr;
+  }
+
+  .admin-list-card img {
+    height: 100%;
+    min-height: 120px;
+  }
+}
