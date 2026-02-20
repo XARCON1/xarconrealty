@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Panel de administración para gestionar propiedades publicadas en Xarcon Realty." />
-  <title>XARCON REALTY | Panel Admin</title>
+  <meta name="description" content="Panel de administración privado para gestionar propiedades publicadas en Xarcon Realty." />
+  <title>XARCON REALTY | Dashboard Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -19,78 +19,100 @@
         <li><a href="index.html">Inicio</a></li>
         <li><a href="propiedades.html">Propiedades</a></li>
         <li><a href="propiedades-mapa.html">Mapa</a></li>
-        <li><a href="admin.html" class="active">Admin</a></li>
       </ul>
     </nav>
   </header>
 
-  <main class="section container">
-    <section id="admin-login" class="admin-auth-card">
-      <h1>Ingreso administrativo</h1>
-      <p>Accede para publicar propiedades sin editar código.</p>
-      <form id="admin-login-form" class="admin-form-grid">
-        <label>
-          Usuario
-          <input id="admin-user" type="text" required autocomplete="username" />
-        </label>
-        <label>
-          Contraseña
-          <input id="admin-pass" type="password" required autocomplete="current-password" />
-        </label>
-        <button class="btn btn-primary" type="submit">Ingresar</button>
-      </form>
-      <p class="admin-help">Credenciales iniciales: <strong>admin</strong> / <strong>Xarcon#2026</strong></p>
-      <p id="admin-login-status" class="admin-status"></p>
-    </section>
-
-    <section id="admin-dashboard" class="admin-dashboard hidden">
-      <div class="admin-header-row">
-        <div>
-          <h1>Dashboard de propiedades</h1>
-          <p>Todo cambio se publica automáticamente en el sitio.</p>
-        </div>
+  <main class="section container admin-dashboard">
+    <div class="admin-header-row">
+      <div>
+        <p class="eyebrow">Área privada</p>
+        <h1>Dashboard de propiedades</h1>
+        <p>Gestiona el inventario, estado y ubicación de cada inmueble.</p>
+      </div>
+      <div class="admin-header-actions">
+        <button id="admin-quick-add" class="btn btn-primary" type="button">+ Agregar rápido</button>
         <button id="admin-logout" class="btn btn-outline" type="button">Cerrar sesión</button>
       </div>
+    </div>
 
-      <div class="admin-layout">
-        <article class="admin-panel">
-          <h2>Agregar nueva propiedad</h2>
-          <form id="admin-property-form" class="admin-form-grid">
-            <label>Título<input id="field-title" type="text" required /></label>
-            <label>Tipo
-              <select id="field-type" required>
-                <option value="">Selecciona tipo</option>
-                <option value="Casa">Casa</option>
-                <option value="Local">Local</option>
-                <option value="Terreno">Terreno</option>
-                <option value="Apartamento">Apartamento</option>
-              </select>
-            </label>
-            <label>Precio (USD)<input id="field-price" type="number" min="0" step="1000" required /></label>
-            <label>Ubicación<input id="field-location" type="text" required /></label>
-            <label>Ciudad<input id="field-city" type="text" required /></label>
-            <label>Dirección<input id="field-address" type="text" /></label>
-            <label>Habitaciones<input id="field-bedrooms" type="number" min="0" step="1" value="0" /></label>
-            <label>Baños<input id="field-bathrooms" type="number" min="0" step="1" value="0" /></label>
-            <label class="admin-full-width">Descripción<textarea id="field-description" rows="4" required></textarea></label>
-            <label class="admin-full-width">Imágenes (múltiples)
-              <input id="field-images" type="file" accept="image/*" multiple required />
-            </label>
-            <div id="image-preview" class="admin-image-preview admin-full-width"></div>
-            <label class="checkbox"><input id="field-featured" type="checkbox" /> Destacada</label>
-            <label class="checkbox"><input id="field-opportunity" type="checkbox" /> Oportunidad</label>
-            <label class="checkbox"><input id="field-sold" type="checkbox" /> Marcar como vendida</label>
-            <button class="btn btn-primary" type="submit">Guardar y publicar</button>
-          </form>
-          <p id="admin-form-status" class="admin-status"></p>
-        </article>
-
-        <article class="admin-panel">
-          <h2>Propiedades publicadas</h2>
-          <div id="admin-property-list" class="admin-property-list"></div>
-        </article>
-      </div>
+    <section class="admin-counters" aria-label="Resumen de propiedades">
+      <article class="admin-counter-card">
+        <p>Total propiedades</p>
+        <strong id="counter-total">0</strong>
+      </article>
+      <article class="admin-counter-card">
+        <p>Disponibles</p>
+        <strong id="counter-available">0</strong>
+      </article>
+      <article class="admin-counter-card">
+        <p>Vendidas</p>
+        <strong id="counter-sold">0</strong>
+      </article>
     </section>
+
+    <div class="admin-layout">
+      <article class="admin-panel">
+        <h2>Agregar / Editar propiedad</h2>
+        <form id="admin-property-form" class="admin-form-grid" data-mode="create">
+          <input id="field-id" type="hidden" />
+          <label>Título<input id="field-title" type="text" required /></label>
+          <label>Tipo
+            <select id="field-type" required>
+              <option value="">Selecciona tipo</option>
+              <option value="Casa">Casa</option>
+              <option value="Local">Local</option>
+              <option value="Terreno">Terreno</option>
+              <option value="Apartamento">Apartamento</option>
+            </select>
+          </label>
+          <label>Precio (USD)<input id="field-price" type="number" min="0" step="1000" required /></label>
+          <label>Agente responsable<input id="field-agent" type="text" value="Equipo Xarcon" required /></label>
+          <label>Ubicación<input id="field-location" type="text" required /></label>
+          <label>Ciudad<input id="field-city" type="text" required /></label>
+          <label>Dirección<input id="field-address" type="text" /></label>
+          <label>Latitud<input id="field-latitude" type="number" step="any" /></label>
+          <label>Longitud<input id="field-longitude" type="number" step="any" /></label>
+          <label>Habitaciones<input id="field-bedrooms" type="number" min="0" step="1" value="0" /></label>
+          <label>Baños<input id="field-bathrooms" type="number" min="0" step="1" value="0" /></label>
+          <label>Estado
+            <select id="field-status" required>
+              <option value="available">Disponible</option>
+              <option value="sold">Vendida</option>
+            </select>
+          </label>
+          <label class="admin-full-width">Descripción<textarea id="field-description" rows="4" required></textarea></label>
+          <label class="admin-full-width">Imágenes (múltiples)
+            <input id="field-images" type="file" accept="image/*" multiple />
+          </label>
+          <div id="image-preview" class="admin-image-preview admin-full-width"></div>
+          <label class="checkbox"><input id="field-featured" type="checkbox" /> Destacada</label>
+          <label class="checkbox"><input id="field-opportunity" type="checkbox" /> Oportunidad</label>
+          <button class="btn btn-primary" type="submit">Guardar propiedad</button>
+        </form>
+        <p id="admin-form-status" class="admin-status"></p>
+      </article>
+
+      <article class="admin-panel">
+        <h2>Inventario general</h2>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Propiedad</th>
+                <th>Agente</th>
+                <th>Ubicación</th>
+                <th>Precio</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="admin-property-list"></tbody>
+          </table>
+        </div>
+      </article>
+    </div>
   </main>
 
   <script src="js/main.js"></script>

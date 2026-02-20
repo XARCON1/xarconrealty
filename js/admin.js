@@ -1,6 +1,10 @@
 const ADMIN_AUTH_KEY = 'xarcon-admin-auth';
-const ADMIN_PROPERTIES_KEY = 'xarcon-admin-properties';
 const ADMIN_CREDENTIALS_HASH_KEY = 'xarcon-admin-credentials-hash';
+const ADMIN_STORAGE_KEYS = window.XARCON_STORAGE_KEYS || {
+  properties: 'xarcon-admin-properties',
+  overrides: 'xarcon-admin-property-overrides',
+  deleted: 'xarcon-admin-deleted-properties'
+};
 
 const textEncoder = new TextEncoder();
 
@@ -19,15 +23,22 @@ const getStoredCredentialHash = async () => {
   return fallback;
 };
 
-const getStoredProperties = () => {
+const safeParse = (value, fallback) => {
   try {
-    return JSON.parse(localStorage.getItem(ADMIN_PROPERTIES_KEY) || '[]');
+    const parsed = JSON.parse(value);
+    return parsed ?? fallback;
   } catch (error) {
-    return [];
+    return fallback;
   }
 };
 
-const setStoredProperties = (properties) => localStorage.setItem(ADMIN_PROPERTIES_KEY, JSON.stringify(properties));
+const getStoredProperties = () => safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.properties) || '[]', []);
+const getOverrides = () => safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.overrides) || '{}', {});
+const getDeletedIds = () => safeParse(localStorage.getItem(ADMIN_STORAGE_KEYS.deleted) || '[]', []);
+
+const setStoredProperties = (properties) => localStorage.setItem(ADMIN_STORAGE_KEYS.properties, JSON.stringify(properties));
+const setOverrides = (overrides) => localStorage.setItem(ADMIN_STORAGE_KEYS.overrides, JSON.stringify(overrides));
+const setDeletedIds = (ids) => localStorage.setItem(ADMIN_STORAGE_KEYS.deleted, JSON.stringify(ids));
 
 const createSlug = (text) =>
   text
@@ -45,93 +56,186 @@ const fileToDataUrl = (file) =>
     reader.readAsDataURL(file);
   });
 
+const requireAuth = () => {
+  if (sessionStorage.getItem(ADMIN_AUTH_KEY) !== 'true') {
+    window.location.replace('index.html');
+    return false;
+  }
+  return true;
+};
+
+const getPropertyOriginMap = async () => {
+  const response = await fetch('data/properties.json');
+  const defaults = response.ok ? await response.json() : [];
+  const customIds = new Set(getStoredProperties().map((property) => property.id));
+  const originMap = {};
+
+  defaults.forEach((property) => {
+    originMap[property.id] = customIds.has(property.id) ? 'custom' : 'default';
+  });
+
+  customIds.forEach((id) => {
+    originMap[id] = 'custom';
+  });
+
+  return originMap;
+};
+
 const setupAdminDashboard = async () => {
-  const loginSection = document.getElementById('admin-login');
-  const dashboardSection = document.getElementById('admin-dashboard');
-  if (!loginSection || !dashboardSection) return;
+  if (!requireAuth()) return;
 
-  const loginForm = document.getElementById('admin-login-form');
-  const loginStatus = document.getElementById('admin-login-status');
-  const userInput = document.getElementById('admin-user');
-  const passInput = document.getElementById('admin-pass');
   const logoutButton = document.getElementById('admin-logout');
-
+  const quickAddButton = document.getElementById('admin-quick-add');
   const propertyForm = document.getElementById('admin-property-form');
   const propertyList = document.getElementById('admin-property-list');
   const formStatus = document.getElementById('admin-form-status');
   const imageInput = document.getElementById('field-images');
   const imagePreview = document.getElementById('image-preview');
+  const totalCountNode = document.getElementById('counter-total');
+  const soldCountNode = document.getElementById('counter-sold');
+  const availableCountNode = document.getElementById('counter-available');
+
+  const fieldIds = {
+    id: document.getElementById('field-id'),
+    title: document.getElementById('field-title'),
+    price: document.getElementById('field-price'),
+    location: document.getElementById('field-location'),
+    city: document.getElementById('field-city'),
+    address: document.getElementById('field-address'),
+    type: document.getElementById('field-type'),
+    bedrooms: document.getElementById('field-bedrooms'),
+    bathrooms: document.getElementById('field-bathrooms'),
+    description: document.getElementById('field-description'),
+    featured: document.getElementById('field-featured'),
+    opportunity: document.getElementById('field-opportunity'),
+    status: document.getElementById('field-status'),
+    agent: document.getElementById('field-agent'),
+    latitude: document.getElementById('field-latitude'),
+    longitude: document.getElementById('field-longitude')
+  };
 
   let uploadedImages = [];
+  let originMap = await getPropertyOriginMap();
 
-  const renderAuth = () => {
-    const isLogged = sessionStorage.getItem(ADMIN_AUTH_KEY) === 'true';
-    loginSection.classList.toggle('hidden', isLogged);
-    dashboardSection.classList.toggle('hidden', !isLogged);
+  const syncCounters = (properties) => {
+    const soldCount = properties.filter((property) => property.status === 'sold').length;
+    totalCountNode.textContent = String(properties.length);
+    soldCountNode.textContent = String(soldCount);
+    availableCountNode.textContent = String(properties.length - soldCount);
   };
 
-  const renderProperties = () => {
-    const properties = getStoredProperties();
-    propertyList.innerHTML = properties.length
-      ? properties
-          .map(
-            (property) => `
-          <article class="admin-list-card">
-            <img src="${property.images[0]}" alt="${property.title}" loading="lazy" />
-            <div>
-              <strong>${property.title}</strong>
-              <p>${property.location} · $${Number(property.price).toLocaleString('en-US')}</p>
-              <p>${property.sold ? 'Estado: Vendida' : 'Estado: Disponible'}</p>
-              <div class="admin-list-actions">
-                <button class="btn btn-outline" data-toggle-sold="${property.id}" type="button">${property.sold ? 'Marcar disponible' : 'Marcar vendida'}</button>
-                <button class="btn btn-outline" data-delete="${property.id}" type="button">Eliminar</button>
-              </div>
-            </div>
-          </article>
-        `
-          )
-          .join('')
-      : '<p>No hay propiedades guardadas aún. Agrega la primera para publicar.</p>';
+  const fillForm = (property) => {
+    fieldIds.id.value = property.id;
+    fieldIds.title.value = property.title;
+    fieldIds.price.value = property.price;
+    fieldIds.location.value = property.location;
+    fieldIds.city.value = property.city || '';
+    fieldIds.address.value = property.address || '';
+    fieldIds.type.value = property.type || '';
+    fieldIds.bedrooms.value = property.bedrooms || 0;
+    fieldIds.bathrooms.value = property.bathrooms || 0;
+    fieldIds.description.value = property.description;
+    fieldIds.featured.checked = Boolean(property.featured);
+    fieldIds.opportunity.checked = Boolean(property.opportunity);
+    fieldIds.status.value = property.status || 'available';
+    fieldIds.agent.value = property.agent || 'Equipo Xarcon';
+    fieldIds.latitude.value = Number.isFinite(Number(property.latitude)) ? property.latitude : '';
+    fieldIds.longitude.value = Number.isFinite(Number(property.longitude)) ? property.longitude : '';
+
+    uploadedImages = [...(property.images || [])];
+    imagePreview.innerHTML = uploadedImages.map((src) => `<img src="${src}" alt="Vista previa" />`).join('');
+
+    propertyForm.dataset.mode = 'edit';
+    formStatus.textContent = `Editando: ${property.title}`;
+    propertyForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const upsertProperty = (property) => {
-    const current = getStoredProperties();
-    current.unshift(property);
-    setStoredProperties(current);
-    renderProperties();
-  };
-
-  imageInput.addEventListener('change', async () => {
-    const files = [...imageInput.files];
+  const resetForm = () => {
+    propertyForm.reset();
+    fieldIds.id.value = '';
+    fieldIds.status.value = 'available';
+    fieldIds.agent.value = 'Equipo Xarcon';
     uploadedImages = [];
     imagePreview.innerHTML = '';
+    propertyForm.dataset.mode = 'create';
+  };
 
-    if (!files.length) return;
+  const renderProperties = async () => {
+    const properties = await window.getProperties();
+    syncCounters(properties);
 
-    uploadedImages = await Promise.all(files.map(fileToDataUrl));
-    imagePreview.innerHTML = uploadedImages.map((src) => `<img src="${src}" alt="Vista previa" />`).join('');
-  });
+    propertyList.innerHTML = properties.length
+      ? properties
+          .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
+          .map(
+            (property) => `
+              <tr>
+                <td><strong>${property.title}</strong><br/><small>${property.id}</small></td>
+                <td>${property.agent || 'Equipo Xarcon'}</td>
+                <td>${property.location}</td>
+                <td>${formatPrice(property.price)}</td>
+                <td><span class="admin-status-pill ${property.status === 'sold' ? 'sold' : 'available'}">${property.status === 'sold' ? 'Vendida' : 'Disponible'}</span></td>
+                <td>${property.dateAdded}</td>
+                <td class="admin-list-actions">
+                  <button class="btn btn-outline" data-edit="${property.id}" type="button">Editar</button>
+                  <button class="btn btn-outline" data-toggle-sold="${property.id}" type="button">${property.status === 'sold' ? 'Marcar disponible' : 'Marcar vendida'}</button>
+                  <button class="btn btn-outline" data-delete="${property.id}" type="button">Eliminar</button>
+                </td>
+              </tr>
+            `
+          )
+          .join('')
+      : '<tr><td colspan="7">No hay propiedades disponibles.</td></tr>';
+  };
 
-  loginForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const enteredHash = await hashText(`${userInput.value.trim()}:${passInput.value}`);
-    const credentialHash = await getStoredCredentialHash();
+  const saveProperty = (property, mode) => {
+    const normalized = window.normalizeProperty(property);
+    const storedProperties = getStoredProperties();
+    const overrides = getOverrides();
+    const deletedIds = new Set(getDeletedIds());
+    deletedIds.delete(normalized.id);
 
-    if (enteredHash !== credentialHash) {
-      loginStatus.textContent = 'Credenciales inválidas. Intenta nuevamente.';
+    if (mode === 'create') {
+      const withoutDuplicate = storedProperties.filter((item) => item.id !== normalized.id);
+      withoutDuplicate.unshift(normalized);
+      setStoredProperties(withoutDuplicate);
+      setDeletedIds([...deletedIds]);
       return;
     }
 
-    sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
-    loginStatus.textContent = '';
-    loginForm.reset();
-    renderAuth();
-    renderProperties();
-  });
+    if (originMap[normalized.id] === 'default') {
+      overrides[normalized.id] = {
+        ...normalized,
+        dateAdded: normalized.dateAdded,
+        status: normalized.status,
+        sold: normalized.status === 'sold'
+      };
+      setOverrides(overrides);
+    } else {
+      const updated = storedProperties.map((item) => (item.id === normalized.id ? normalized : item));
+      setStoredProperties(updated);
+    }
+
+    setDeletedIds([...deletedIds]);
+  };
 
   logoutButton.addEventListener('click', () => {
     sessionStorage.removeItem(ADMIN_AUTH_KEY);
-    renderAuth();
+    window.location.replace('index.html');
+  });
+
+  quickAddButton.addEventListener('click', () => {
+    resetForm();
+    formStatus.textContent = 'Modo rápido: completa los campos y guarda.';
+    fieldIds.title.focus();
+  });
+
+  imageInput.addEventListener('change', async () => {
+    const files = [...imageInput.files];
+    if (!files.length) return;
+    const loaded = await Promise.all(files.map(fileToDataUrl));
+    uploadedImages = loaded;
+    imagePreview.innerHTML = uploadedImages.map((src) => `<img src="${src}" alt="Vista previa" />`).join('');
   });
 
   propertyForm.addEventListener('submit', async (event) => {
@@ -142,59 +246,90 @@ const setupAdminDashboard = async () => {
       return;
     }
 
-    const title = document.getElementById('field-title').value.trim();
-    const id = `${createSlug(title)}-${Date.now().toString().slice(-6)}`;
+    const mode = propertyForm.dataset.mode || 'create';
+    const title = fieldIds.title.value.trim();
+    const currentId = fieldIds.id.value || `${createSlug(title)}-${Date.now().toString().slice(-6)}`;
 
     const property = {
-      id,
+      id: currentId,
       title,
-      price: Number(document.getElementById('field-price').value),
-      location: document.getElementById('field-location').value.trim(),
+      price: Number(fieldIds.price.value),
+      location: fieldIds.location.value.trim(),
       images: uploadedImages,
-      description: document.getElementById('field-description').value.trim(),
-      type: document.getElementById('field-type').value,
-      bedrooms: Number(document.getElementById('field-bedrooms').value || 0),
-      bathrooms: Number(document.getElementById('field-bathrooms').value || 0),
-      featured: document.getElementById('field-featured').checked,
-      opportunity: document.getElementById('field-opportunity').checked,
-      sold: document.getElementById('field-sold').checked,
-      createdAt: new Date().toISOString().slice(0, 10),
-      city: document.getElementById('field-city').value.trim(),
-      address: document.getElementById('field-address').value.trim(),
-      latitude: null,
-      longitude: null
+      description: fieldIds.description.value.trim(),
+      type: fieldIds.type.value,
+      bedrooms: Number(fieldIds.bedrooms.value || 0),
+      bathrooms: Number(fieldIds.bathrooms.value || 0),
+      featured: fieldIds.featured.checked,
+      opportunity: fieldIds.opportunity.checked,
+      status: fieldIds.status.value,
+      sold: fieldIds.status.value === 'sold',
+      dateAdded: new Date().toISOString().slice(0, 10),
+      city: fieldIds.city.value.trim(),
+      address: fieldIds.address.value.trim(),
+      latitude: fieldIds.latitude.value === '' ? null : Number(fieldIds.latitude.value),
+      longitude: fieldIds.longitude.value === '' ? null : Number(fieldIds.longitude.value),
+      agent: fieldIds.agent.value.trim() || 'Equipo Xarcon'
     };
 
-    upsertProperty(property);
-    propertyForm.reset();
-    uploadedImages = [];
-    imagePreview.innerHTML = '';
-    formStatus.textContent = 'Propiedad guardada y publicada automáticamente.';
+    if (mode === 'edit') {
+      const existing = (await window.getProperties()).find((item) => item.id === currentId);
+      if (existing?.dateAdded) {
+        property.dateAdded = existing.dateAdded;
+      }
+    }
+
+    saveProperty(property, mode);
+    originMap = await getPropertyOriginMap();
+    await renderProperties();
+    resetForm();
+    formStatus.textContent = 'Propiedad guardada correctamente.';
   });
 
-  propertyList.addEventListener('click', (event) => {
+  propertyList.addEventListener('click', async (event) => {
     const deleteId = event.target.dataset.delete;
     const toggleId = event.target.dataset.toggleSold;
-    const properties = getStoredProperties();
+    const editId = event.target.dataset.edit;
 
-    if (deleteId) {
-      const filtered = properties.filter((item) => item.id !== deleteId);
-      setStoredProperties(filtered);
-      renderProperties();
+    if (editId) {
+      const properties = await window.getProperties();
+      const selected = properties.find((item) => item.id === editId);
+      if (selected) fillForm(selected);
       return;
     }
 
     if (toggleId) {
-      const updated = properties.map((item) => (item.id === toggleId ? { ...item, sold: !item.sold } : item));
-      setStoredProperties(updated);
-      renderProperties();
+      const properties = await window.getProperties();
+      const selected = properties.find((item) => item.id === toggleId);
+      if (!selected) return;
+      saveProperty({ ...selected, status: selected.status === 'sold' ? 'available' : 'sold' }, 'edit');
+      await renderProperties();
+      formStatus.textContent = 'Estado actualizado correctamente.';
+      return;
+    }
+
+    if (deleteId) {
+      const stored = getStoredProperties();
+      const overrides = getOverrides();
+      const deletedIds = new Set(getDeletedIds());
+      const isCustom = originMap[deleteId] === 'custom';
+
+      if (isCustom) {
+        setStoredProperties(stored.filter((item) => item.id !== deleteId));
+      } else {
+        delete overrides[deleteId];
+        setOverrides(overrides);
+        deletedIds.add(deleteId);
+      }
+
+      setDeletedIds([...deletedIds]);
+      await renderProperties();
+      formStatus.textContent = 'Propiedad eliminada del catálogo público.';
     }
   });
 
-  renderAuth();
-  if (sessionStorage.getItem(ADMIN_AUTH_KEY) === 'true') {
-    renderProperties();
-  }
+  resetForm();
+  await renderProperties();
 };
 
 document.addEventListener('DOMContentLoaded', () => {
