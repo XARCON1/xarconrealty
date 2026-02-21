@@ -66,9 +66,18 @@
             <div id="admin-property-map" class="admin-property-map" aria-label="Mapa para seleccionar coordenadas"></div>
           </div>
           <label class="admin-full-width">Descripción<textarea id="field-description" rows="4" required></textarea></label>
-          <label class="admin-full-width">Imágenes (URLs separadas por línea)
-            <textarea id="field-images" rows="4" placeholder="https://...&#10;https://..." required></textarea>
-          </label>
+          <div class="admin-full-width admin-upload-wrapper">
+            <p class="admin-upload-label">Imágenes (máx. 3MB por imagen)</p>
+            <div id="image-upload-dropzone" class="admin-upload-dropzone" role="button" tabindex="0" aria-label="Arrastra imágenes o haz click para subir">
+              <p><strong>Arrastra y suelta imágenes aquí</strong> o haz click para seleccionarlas.</p>
+              <p>Formatos soportados: JPG, PNG, WEBP, GIF</p>
+              <input id="field-images" type="file" accept="image/*" multiple />
+            </div>
+            <div class="admin-upload-progress" aria-live="polite">
+              <progress id="upload-progress-bar" max="100" value="0"></progress>
+              <span id="upload-progress-label">Sin imágenes</span>
+            </div>
+          </div>
           <div class="admin-image-preview admin-full-width" id="image-preview"></div>
           <div class="admin-actions-row admin-full-width">
             <button class="btn btn-primary" type="submit">Guardar propiedad</button>
@@ -110,6 +119,7 @@
   <script src="js/maps-config.js"></script>
   <script src="js/main.js"></script>
   <script src="js/admin-map.js"></script>
+  <script src="js/admin-upload.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

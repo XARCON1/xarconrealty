@@ -36,12 +36,6 @@ const generateIdFromTitle = (title) =>
     .replace(/^-+|-+$/g, '')
     .slice(0, 60);
 
-const parseImageUrls = (raw) =>
-  raw
-    .split('\n')
-    .map((value) => value.trim())
-    .filter(Boolean);
-
 const setupAdminPanel = async () => {
   const form = document.getElementById('admin-property-form');
   if (!form) return;
@@ -49,7 +43,6 @@ const setupAdminPanel = async () => {
   const statusNode = document.getElementById('admin-form-status');
   const propertyList = document.getElementById('admin-property-list');
   const jsonPreview = document.getElementById('json-preview');
-  const imagePreview = document.getElementById('image-preview');
   const cancelEditButton = document.getElementById('admin-cancel-edit');
   const downloadButton = document.getElementById('download-json');
 
@@ -63,10 +56,18 @@ const setupAdminPanel = async () => {
     bedrooms: document.getElementById('field-bedrooms'),
     bathrooms: document.getElementById('field-bathrooms'),
     area: document.getElementById('field-area'),
-    images: document.getElementById('field-images'),
     latitude: document.getElementById('field-latitude'),
     longitude: document.getElementById('field-longitude')
   };
+
+  const imageUploader = window.createAdminImageUploader({
+    input: document.getElementById('field-images'),
+    dropzone: document.getElementById('image-upload-dropzone'),
+    preview: document.getElementById('image-preview'),
+    progressBar: document.getElementById('upload-progress-bar'),
+    progressLabel: document.getElementById('upload-progress-label'),
+    statusNode
+  });
 
   let properties = [];
   const mapController = typeof window.setupAdminMap === 'function'
@@ -78,14 +79,6 @@ const setupAdminPanel = async () => {
     jsonPreview.value = payload;
   };
 
-  const renderImagePreview = () => {
-    const urls = parseImageUrls(fields.images.value);
-    imagePreview.innerHTML = urls
-      .slice(0, 6)
-      .map((url) => `<img src="${url}" alt="Preview" loading="lazy" />`)
-      .join('');
-  };
-
   const resetForm = () => {
     form.reset();
     form.dataset.mode = 'create';
@@ -93,7 +86,7 @@ const setupAdminPanel = async () => {
     fields.bedrooms.value = '0';
     fields.bathrooms.value = '0';
     fields.area.value = '0';
-    imagePreview.innerHTML = '';
+    imageUploader.clear();
     if (mapController?.resetToDefault) {
       mapController.resetToDefault();
     }
@@ -130,8 +123,7 @@ const setupAdminPanel = async () => {
     fields.area.value = String(property.area || 0);
     fields.latitude.value = Number.isFinite(property.latitude) ? String(property.latitude) : '';
     fields.longitude.value = Number.isFinite(property.longitude) ? String(property.longitude) : '';
-    fields.images.value = property.images.join('\n');
-    renderImagePreview();
+    imageUploader.setImagesFromDataUrls(property.images);
 
     if (mapController?.setCoordinates && Number.isFinite(property.latitude) && Number.isFinite(property.longitude)) {
       mapController.setCoordinates(property.latitude, property.longitude);
@@ -139,9 +131,9 @@ const setupAdminPanel = async () => {
   };
 
   const upsertProperty = () => {
-    const images = parseImageUrls(fields.images.value);
+    const images = imageUploader.getImages();
     if (!images.length) {
-      statusNode.textContent = 'Debes agregar al menos una URL de imagen válida.';
+      statusNode.textContent = 'Debes agregar al menos una imagen válida (máx. 3MB).';
       return;
     }
 
@@ -206,8 +198,6 @@ const setupAdminPanel = async () => {
     event.preventDefault();
     upsertProperty();
   });
-
-  fields.images.addEventListener('input', renderImagePreview);
 
   cancelEditButton.addEventListener('click', () => {
     resetForm();
