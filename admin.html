@@ -90,21 +90,9 @@
       </article>
 
       <article class="admin-panel">
-        <h2>Listado actual</h2>
-        <div class="admin-table-wrap">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Propiedad</th>
-                <th>Tipo</th>
-                <th>Precio</th>
-                <th>Ubicación</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="admin-property-list"></tbody>
-          </table>
-        </div>
+        <h2>Manage Properties</h2>
+        <p class="admin-manage-copy">Todas las propiedades en <code>js/properties.json</code> se cargan aquí para editar o eliminar.</p>
+        <div id="admin-property-list" class="admin-manage-grid" aria-live="polite"></div>
       </article>
     </div>
 

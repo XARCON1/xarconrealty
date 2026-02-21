@@ -1,4 +1,6 @@
 const ADMIN_JSON_SOURCE = 'js/properties.json';
+const ADMIN_FALLBACK_SOURCES = ['js/properties.json', './js/properties.json', '../js/properties.json'];
+
 
 const normalizePropertyForAdmin = (property) => {
   const latitude = Number(property.latitude ?? property.lat);
@@ -86,6 +88,13 @@ const setupAdminPanel = async () => {
     const payload = JSON.stringify(properties, null, 2);
     jsonPreview.value = payload;
   };
+
+  const escapeHtml = (value) => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 
   const setImageFeedback = (message, isError = false) => {
     imageUrlFeedback.textContent = message;
@@ -177,21 +186,34 @@ const setupAdminPanel = async () => {
     }
   };
 
-  const buildRow = (property) => `
-    <tr>
-      <td>${property.title}</td>
-      <td>${property.type}</td>
-      <td>${formatPrice(property.price)}</td>
-      <td>${property.location}</td>
-      <td class="admin-list-actions">
-        <button class="btn btn-outline" data-action="edit" data-id="${property.id}" type="button">Editar</button>
-        <button class="btn btn-outline" data-action="delete" data-id="${property.id}" type="button">Eliminar</button>
-      </td>
-    </tr>
-  `;
+  const buildCard = (property) => {
+    const imageSrc = property.images[0] || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80';
+
+    return `
+      <article class="admin-manage-card">
+        <img class="admin-manage-thumb" src="${escapeHtml(imageSrc)}" alt="${escapeHtml(property.title)}" loading="lazy" referrerpolicy="no-referrer" />
+        <div class="admin-manage-content">
+          <p class="admin-manage-type">${escapeHtml(property.type)}</p>
+          <h3>${escapeHtml(property.title)}</h3>
+          <p class="admin-manage-price">${formatPrice(property.price)}</p>
+          <p class="admin-manage-location">${escapeHtml(property.location)}</p>
+          <div class="admin-list-actions">
+            <button class="btn btn-outline" data-action="edit" data-id="${escapeHtml(property.id)}" type="button">Editar</button>
+            <button class="btn btn-outline" data-action="delete" data-id="${escapeHtml(property.id)}" type="button">Eliminar</button>
+          </div>
+        </div>
+      </article>
+    `;
+  };
 
   const renderTable = () => {
-    propertyList.innerHTML = properties.map(buildRow).join('');
+    if (!properties.length) {
+      propertyList.innerHTML = '<p class="admin-empty-state">No hay propiedades cargadas. Agrega una nueva propiedad para comenzar.</p>';
+      updatePreview();
+      return;
+    }
+
+    propertyList.innerHTML = properties.map(buildCard).join('');
     updatePreview();
   };
 
@@ -358,13 +380,28 @@ const setupAdminPanel = async () => {
   });
 
   try {
-    const response = await fetch(ADMIN_JSON_SOURCE);
-    if (!response.ok) {
+    let data = null;
+
+    for (const source of ADMIN_FALLBACK_SOURCES) {
+      try {
+        const response = await fetch(source, { cache: 'no-store' });
+        if (!response.ok) continue;
+
+        data = await response.json();
+        if (Array.isArray(data)) {
+          statusNode.textContent = `Propiedades cargadas desde ${source}.`;
+          break;
+        }
+      } catch (fetchError) {
+        // Try the next known path.
+      }
+    }
+
+    if (!Array.isArray(data)) {
       throw new Error('fetch-failed');
     }
 
-    const data = await response.json();
-    properties = Array.isArray(data) ? data.map(normalizePropertyForAdmin) : [];
+    properties = data.map(normalizePropertyForAdmin);
     properties.sort((a, b) => a.title.localeCompare(b.title, 'es'));
     renderTable();
     resetForm();
