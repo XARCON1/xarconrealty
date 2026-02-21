@@ -67,7 +67,6 @@ body,
 .admin-upload-card,
 .map-control-panel,
 .map-property-preview,
-.admin-upload-dropzone,
 .hero-search,
 .btn,
 input,
@@ -89,7 +88,6 @@ select {
 .admin-upload-card,
 .admin-map-section,
 .admin-map-fallback,
-.admin-upload-dropzone,
 .admin-property-map {
   background: var(--surface-color);
 }
@@ -109,8 +107,7 @@ select {
 .admin-form-grid input,
 .admin-form-grid select,
 .admin-form-grid textarea,
-.admin-map-toolbar input,
-.admin-upload-dropzone {
+.admin-map-toolbar input {
   background: var(--input-bg);
   color: var(--text-color);
 }

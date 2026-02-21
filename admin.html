@@ -73,16 +73,12 @@
           </div>
           <label class="admin-full-width">Descripción<textarea id="field-description" rows="4" required></textarea></label>
           <div class="admin-full-width admin-upload-wrapper">
-            <p class="admin-upload-label">Imágenes (máx. 3MB por imagen)</p>
-            <div id="image-upload-dropzone" class="admin-upload-dropzone" role="button" tabindex="0" aria-label="Arrastra imágenes o haz click para subir">
-              <p><strong>Arrastra y suelta imágenes aquí</strong> o haz click para seleccionarlas.</p>
-              <p>Formatos soportados: JPG, PNG, WEBP, GIF</p>
-              <input id="field-images" type="file" accept="image/*" multiple />
+            <p class="admin-upload-label">Imágenes por URL</p>
+            <div class="admin-image-url-row">
+              <input id="field-image-url" type="url" placeholder="https://example.com/imagen.jpg" aria-label="URL de imagen" />
+              <button id="add-image-url" class="btn btn-outline" type="button">Agregar imagen</button>
             </div>
-            <div class="admin-upload-progress" aria-live="polite">
-              <progress id="upload-progress-bar" max="100" value="0"></progress>
-              <span id="upload-progress-label">Sin imágenes</span>
-            </div>
+            <p id="image-url-feedback" class="admin-upload-feedback" aria-live="polite">Pega una URL y agrégala para incluirla en la propiedad.</p>
           </div>
           <div class="admin-image-preview admin-full-width" id="image-preview"></div>
           <div class="admin-actions-row admin-full-width">
@@ -125,7 +121,6 @@
   <script src="js/maps-config.js"></script>
   <script src="js/main.js"></script>
   <script src="js/admin-map.js"></script>
-  <script src="js/admin-upload.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>
