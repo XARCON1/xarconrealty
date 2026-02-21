@@ -1,6 +1,11 @@
 const MAPS_DEFAULT_CENTER = { lat: 12.1149926, lng: -86.2361744 };
 const MAPS_DEFAULT_ZOOM = 9;
 
+
+const MAP_PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80';
+const getMapPropertyImage = (property) =>
+  Array.isArray(property.images) && property.images[0] ? property.images[0] : MAP_PLACEHOLDER_IMAGE;
+
 const getMapApiKey = () => window.XARCON_MAPS_API_KEY || document.querySelector('meta[name="xarcon-maps-key"]')?.content || '';
 
 const loadGoogleMapsApi = () => {
@@ -93,7 +98,7 @@ const setupPropertiesMapPage = async () => {
         const detailHref = `propiedades/propiedad-template.html?id=${property.id}`;
         return `
           <article class="map-property-preview reveal">
-            <img src="${property.images[0]}" alt="${property.title}" loading="lazy" />
+            <img src="${getMapPropertyImage(property)}" alt="${property.title}" loading="lazy" />
             <div>
               <strong>${property.title}</strong>
               <p>${property.city} · ${formatPrice(property.price)}</p>
@@ -107,7 +112,7 @@ const setupPropertiesMapPage = async () => {
 
   const getInfoCard = (property) => `
     <article class="map-info-card">
-      <img src="${property.images[0]}" alt="${property.title}" loading="lazy" />
+      <img src="${getMapPropertyImage(property)}" alt="${property.title}" loading="lazy" />
       <div class="map-info-content">
         <h3>${property.title}</h3>
         <p class="price">${formatPrice(property.price)}</p>

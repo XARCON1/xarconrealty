@@ -3,7 +3,9 @@ const ADMIN_JSON_SOURCE = 'js/properties.json';
 const normalizePropertyForAdmin = (property) => {
   const latitude = Number(property.latitude ?? property.lat);
   const longitude = Number(property.longitude ?? property.lng);
-  const images = Array.isArray(property.images) ? property.images.filter(Boolean) : [];
+  const images = Array.isArray(property.images)
+    ? property.images.filter((image) => typeof image === 'string' && image.trim())
+    : [];
 
   return {
     id: property.id,
@@ -36,6 +38,15 @@ const generateIdFromTitle = (title) =>
     .replace(/^-+|-+$/g, '')
     .slice(0, 60);
 
+const isLikelyImageUrl = (url) => {
+  try {
+    const parsed = new URL(url);
+    return ['http:', 'https:'].includes(parsed.protocol);
+  } catch {
+    return false;
+  }
+};
+
 const setupAdminPanel = async () => {
   const form = document.getElementById('admin-property-form');
   if (!form) return;
@@ -45,6 +56,11 @@ const setupAdminPanel = async () => {
   const jsonPreview = document.getElementById('json-preview');
   const cancelEditButton = document.getElementById('admin-cancel-edit');
   const downloadButton = document.getElementById('download-json');
+
+  const imageUrlInput = document.getElementById('field-image-url');
+  const addImageButton = document.getElementById('add-image-url');
+  const imagePreviewNode = document.getElementById('image-preview');
+  const imageUrlFeedback = document.getElementById('image-url-feedback');
 
   const fields = {
     id: document.getElementById('field-id'),
@@ -60,16 +76,8 @@ const setupAdminPanel = async () => {
     longitude: document.getElementById('field-longitude')
   };
 
-  const imageUploader = window.createAdminImageUploader({
-    input: document.getElementById('field-images'),
-    dropzone: document.getElementById('image-upload-dropzone'),
-    preview: document.getElementById('image-preview'),
-    progressBar: document.getElementById('upload-progress-bar'),
-    progressLabel: document.getElementById('upload-progress-label'),
-    statusNode
-  });
-
   let properties = [];
+  let imageUrls = [];
   const mapController = typeof window.setupAdminMap === 'function'
     ? window.setupAdminMap({ latitudeField: fields.latitude, longitudeField: fields.longitude, statusNode })
     : null;
@@ -79,6 +87,81 @@ const setupAdminPanel = async () => {
     jsonPreview.value = payload;
   };
 
+  const setImageFeedback = (message, isError = false) => {
+    imageUrlFeedback.textContent = message;
+    imageUrlFeedback.classList.toggle('is-error', isError);
+  };
+
+  const renderImagePreview = (previewCandidate = '') => {
+    const cards = imageUrls
+      .map(
+        (url, index) => `
+          <article class="admin-upload-card" data-image-url="${url}">
+            <img src="${url}" alt="Imagen ${index + 1}" loading="lazy" referrerpolicy="no-referrer" />
+            <div class="admin-upload-card-meta">
+              <p>${url}</p>
+            </div>
+            <button class="btn btn-outline" type="button" data-action="remove-image-url" data-image-url="${url}">Eliminar</button>
+          </article>
+        `
+      )
+      .join('');
+
+    const previewCard = previewCandidate
+      ? `
+        <article class="admin-upload-card admin-upload-card-candidate">
+          <img src="${previewCandidate}" alt="Vista previa nueva imagen" loading="lazy" referrerpolicy="no-referrer" />
+          <div class="admin-upload-card-meta">
+            <p>Vista previa pendiente</p>
+          </div>
+        </article>
+      `
+      : '';
+
+    imagePreviewNode.innerHTML = `${previewCard}${cards}`;
+  };
+
+  const tryLoadImage = (url) =>
+    new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+
+  const addImageUrl = async () => {
+    const url = imageUrlInput.value.trim();
+    if (!url) {
+      setImageFeedback('Pega una URL de imagen.', true);
+      return;
+    }
+
+    if (!isLikelyImageUrl(url)) {
+      setImageFeedback('URL inválida. Usa una URL http(s) válida.', true);
+      return;
+    }
+
+    if (imageUrls.includes(url)) {
+      setImageFeedback('Esta imagen ya fue agregada.', true);
+      return;
+    }
+
+    renderImagePreview(url);
+    setImageFeedback('Validando imagen...', false);
+
+    const isValidImage = await tryLoadImage(url);
+    if (!isValidImage) {
+      renderImagePreview();
+      setImageFeedback('No se pudo cargar la imagen desde esa URL. Verifica el enlace.', true);
+      return;
+    }
+
+    imageUrls.push(url);
+    imageUrlInput.value = '';
+    renderImagePreview();
+    setImageFeedback('Imagen agregada correctamente.');
+  };
+
   const resetForm = () => {
     form.reset();
     form.dataset.mode = 'create';
@@ -86,7 +169,9 @@ const setupAdminPanel = async () => {
     fields.bedrooms.value = '0';
     fields.bathrooms.value = '0';
     fields.area.value = '0';
-    imageUploader.clear();
+    imageUrls = [];
+    renderImagePreview();
+    setImageFeedback('Pega una URL y agrégala para incluirla en la propiedad.');
     if (mapController?.resetToDefault) {
       mapController.resetToDefault();
     }
@@ -123,7 +208,9 @@ const setupAdminPanel = async () => {
     fields.area.value = String(property.area || 0);
     fields.latitude.value = Number.isFinite(property.latitude) ? String(property.latitude) : '';
     fields.longitude.value = Number.isFinite(property.longitude) ? String(property.longitude) : '';
-    imageUploader.setImagesFromDataUrls(property.images);
+    imageUrls = [...property.images];
+    renderImagePreview();
+    setImageFeedback('Editando imágenes por URL.');
 
     if (mapController?.setCoordinates && Number.isFinite(property.latitude) && Number.isFinite(property.longitude)) {
       mapController.setCoordinates(property.latitude, property.longitude);
@@ -131,9 +218,9 @@ const setupAdminPanel = async () => {
   };
 
   const upsertProperty = () => {
-    const images = imageUploader.getImages();
+    const images = imageUrls.filter(Boolean);
     if (!images.length) {
-      statusNode.textContent = 'Debes agregar al menos una imagen válida (máx. 3MB).';
+      statusNode.textContent = 'Debes agregar al menos una URL de imagen válida.';
       return;
     }
 
@@ -197,6 +284,36 @@ const setupAdminPanel = async () => {
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     upsertProperty();
+  });
+
+  addImageButton.addEventListener('click', addImageUrl);
+
+  imageUrlInput.addEventListener('input', () => {
+    const candidateUrl = imageUrlInput.value.trim();
+    if (isLikelyImageUrl(candidateUrl)) {
+      renderImagePreview(candidateUrl);
+      setImageFeedback('Vista previa inmediata. Pulsa "Agregar imagen" para validar y guardar.', false);
+    } else {
+      renderImagePreview();
+      setImageFeedback('Pega una URL y agrégala para incluirla en la propiedad.', false);
+    }
+  });
+
+  imageUrlInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      addImageUrl();
+    }
+  });
+
+  imagePreviewNode.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-action="remove-image-url"]');
+    if (!button) return;
+
+    const url = button.dataset.imageUrl;
+    imageUrls = imageUrls.filter((imageUrl) => imageUrl !== url);
+    renderImagePreview();
+    setImageFeedback(imageUrls.length ? 'Imagen eliminada.' : 'No hay imágenes agregadas todavía.');
   });
 
   cancelEditButton.addEventListener('click', () => {

@@ -10,6 +10,11 @@ const formatPrice = (value) =>
 
 const getBasePath = () => (window.location.pathname.includes('/propiedades/') ? '../' : '');
 
+
+const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80';
+const getPrimaryImage = (property) =>
+  Array.isArray(property.images) && property.images[0] ? property.images[0] : PLACEHOLDER_IMAGE;
+
 const normalizeProperty = (property) => {
   const latitude = Number(property.latitude ?? property.lat);
   const longitude = Number(property.longitude ?? property.lng);
@@ -60,7 +65,7 @@ const createPropertyCard = (property) => {
 
   return `
     <article class="property-card reveal ${property.status === 'sold' ? 'property-card-sold' : ''}">
-      <img src="${property.images[0]}" alt="${property.title}" loading="lazy" />
+      <img src="${getPrimaryImage(property)}" alt="${property.title}" loading="lazy" />
       <div class="property-content">
         <p class="property-chip">${property.type}</p>
         ${property.status === 'sold' ? '<p class="sold-chip">Vendida</p>' : ''}
@@ -213,19 +218,20 @@ const setupPropertyDetail = async () => {
   const params = new URLSearchParams(window.location.search);
   const propertyId = params.get('id');
   const property = properties.find((item) => item.id === propertyId) || properties[0];
+  const galleryImages = property.images.length ? property.images : [getPrimaryImage(property)];
   console.debug('[XARCON] Property detail requested:', { propertyId, resolvedPropertyId: property?.id });
 
   document.title = `XARCON INMOBILIARIA | ${property.title}`;
 
   detailNode.innerHTML = `
     <section class="detail-gallery">
-      <img id="main-detail-image" src="${property.images[0]}" alt="${property.title}" class="detail-image" />
+      <img id="main-detail-image" src="${galleryImages[0]}" alt="${property.title}" class="detail-image" />
       <div class="gallery-controls">
         <button class="btn btn-outline" id="gallery-prev" type="button">←</button>
         <button class="btn btn-outline" id="gallery-next" type="button">→</button>
       </div>
       <div class="thumb-grid">
-        ${property.images
+        ${galleryImages
           .map(
             (image, index) =>
               `<button class="thumb ${index === 0 ? 'active' : ''}" data-image-index="${index}" type="button"><img src="${image}" alt="Vista ${index + 1} de ${property.title}" /></button>`
@@ -262,17 +268,17 @@ const setupPropertyDetail = async () => {
   const thumbs = [...detailNode.querySelectorAll('.thumb')];
 
   const updateGallery = () => {
-    mainImageNode.src = property.images[currentImage];
+    mainImageNode.src = galleryImages[currentImage];
     thumbs.forEach((thumb, index) => thumb.classList.toggle('active', index === currentImage));
   };
 
   detailNode.querySelector('#gallery-prev').addEventListener('click', () => {
-    currentImage = (currentImage - 1 + property.images.length) % property.images.length;
+    currentImage = (currentImage - 1 + galleryImages.length) % galleryImages.length;
     updateGallery();
   });
 
   detailNode.querySelector('#gallery-next').addEventListener('click', () => {
-    currentImage = (currentImage + 1) % property.images.length;
+    currentImage = (currentImage + 1) % galleryImages.length;
     updateGallery();
   });
 
