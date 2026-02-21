@@ -1,27 +1,5 @@
 [
   {
-    "id": "casa-2",
-    "title": "CASA 2",
-    "price": 7000,
-    "location": "MATAGALPA",
-    "city": "MATAGALPA",
-    "address": "MATAGALPA",
-    "type": "Apartamento",
-    "description": "SE ALQUILA APARTAMENTO",
-    "bedrooms": 2,
-    "bathrooms": 1,
-    "area": 100,
-    "images": [
-      "C:\\fakepath\\service1.png"
-    ],
-    "latitude": 12.8654,
-    "longitude": -85.2072,
-    "featured": false,
-    "opportunity": false,
-    "createdAt": "2026-02-21",
-    "agent": "Equipo Xarcon"
-  },
-  {
     "id": "casa-las-colinas",
     "title": "Casa contemporánea en Las Colinas",
     "price": 265000,
