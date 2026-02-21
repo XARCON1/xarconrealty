@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Panel de administración para generar el archivo properties.json de Xarcon Realty." />
+  <meta name="xarcon-maps-key" content="" />
   <title>XARCON REALTY | Admin Panel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="styles/admin.css" />
 </head>
 <body>
   <header class="site-header">
@@ -55,6 +57,14 @@
           <label>Área (m²)<input id="field-area" type="number" min="0" step="1" value="0" /></label>
           <label>Latitud<input id="field-latitude" type="number" step="any" /></label>
           <label>Longitud<input id="field-longitude" type="number" step="any" /></label>
+          <div class="admin-map-section admin-full-width">
+            <div class="admin-map-toolbar">
+              <input id="admin-map-search" type="search" placeholder="Buscar ciudad o dirección" aria-label="Buscar ubicación en mapa" />
+              <button id="admin-use-map-location" class="btn btn-outline" type="button">Usar ubicación actual del mapa</button>
+            </div>
+            <p id="admin-live-coordinates" class="admin-live-coordinates">Lat: 12.865400 · Lng: -85.207200</p>
+            <div id="admin-property-map" class="admin-property-map" aria-label="Mapa para seleccionar coordenadas"></div>
+          </div>
           <label class="admin-full-width">Descripción<textarea id="field-description" rows="4" required></textarea></label>
           <label class="admin-full-width">Imágenes (URLs separadas por línea)
             <textarea id="field-images" rows="4" placeholder="https://...&#10;https://..." required></textarea>
@@ -97,7 +107,9 @@
     </article>
   </main>
 
+  <script src="js/maps-config.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/admin-map.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

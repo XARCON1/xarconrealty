@@ -69,6 +69,9 @@ const setupAdminPanel = async () => {
   };
 
   let properties = [];
+  const mapController = typeof window.setupAdminMap === 'function'
+    ? window.setupAdminMap({ latitudeField: fields.latitude, longitudeField: fields.longitude, statusNode })
+    : null;
 
   const updatePreview = () => {
     const payload = JSON.stringify(properties, null, 2);
@@ -91,6 +94,9 @@ const setupAdminPanel = async () => {
     fields.bathrooms.value = '0';
     fields.area.value = '0';
     imagePreview.innerHTML = '';
+    if (mapController?.resetToDefault) {
+      mapController.resetToDefault();
+    }
   };
 
   const buildRow = (property) => `
@@ -126,6 +132,10 @@ const setupAdminPanel = async () => {
     fields.longitude.value = Number.isFinite(property.longitude) ? String(property.longitude) : '';
     fields.images.value = property.images.join('\n');
     renderImagePreview();
+
+    if (mapController?.setCoordinates && Number.isFinite(property.latitude) && Number.isFinite(property.longitude)) {
+      mapController.setCoordinates(property.latitude, property.longitude);
+    }
   };
 
   const upsertProperty = () => {
@@ -250,10 +260,12 @@ const setupAdminPanel = async () => {
     properties = Array.isArray(data) ? data.map(normalizePropertyForAdmin) : [];
     properties.sort((a, b) => a.title.localeCompare(b.title, 'es'));
     renderTable();
+    resetForm();
   } catch (error) {
     statusNode.textContent = 'No se pudo cargar js/properties.json';
     properties = [];
     renderTable();
+    resetForm();
   }
 };
 
