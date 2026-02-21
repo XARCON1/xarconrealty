@@ -9,12 +9,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../styles/theme.css" />
+  <script src="../js/theme-toggle.js"></script>
 </head>
 <body>
   <header class="site-header">
     <nav class="navbar container" aria-label="Navegación principal">
       <a class="logo" href="../index.html">XARCON <span>INMOBILIARIA</span></a>
       <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+      <button class="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme">
+        <span class="theme-icon theme-icon-sun" aria-hidden="true">☀️</span>
+        <span class="theme-icon theme-icon-moon" aria-hidden="true">🌙</span>
+      </button>
       <ul class="nav-links">
         <li><a href="../index.html">Inicio</a></li>
         <li><a href="../nosotros.html">Nosotros</a></li>
