@@ -137,6 +137,7 @@ img { max-width: 100%; display: block; }
 .section-header { margin-bottom: 1.2rem; }
 
 .property-grid { display: grid; gap: 1.2rem; }
+/* Cards con microinteracciones fluidas y performantes (transform + opacity). */
 .property-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -144,9 +145,27 @@ img { max-width: 100%; display: block; }
   overflow: hidden;
   box-shadow: var(--shadow-soft);
   transition: transform .3s ease, box-shadow .3s ease;
+  will-change: transform;
 }
-.property-card:hover { transform: translateY(-5px); box-shadow: 0 18px 30px rgba(19, 32, 53, 0.16); }
-.property-card img { height: 220px; width: 100%; object-fit: cover; }
+
+/* Elevación más marcada para sensación premium en hover. */
+.property-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Imagen con zoom ligero al hover, manteniendo composición y rendimiento. */
+.property-card img {
+  height: 220px;
+  width: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+  transform: translateZ(0);
+}
+
+.property-card:hover img {
+  transform: scale(1.05);
+}
 .property-content { padding: 1rem; }
 .property-content h3 { margin: 0.2rem 0; }
 .property-chip {
@@ -242,8 +261,33 @@ img { max-width: 100%; display: block; }
 .social-links { display: flex; gap: 1rem; }
 .social-links a { color: var(--color-accent); text-decoration: none; font-weight: 600; }
 
-.reveal { animation: reveal .7s ease both; }
-@keyframes reveal { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+
+/* Layout de Nosotros: storytelling listo con texto + espacio de video en dos columnas. */
+.about-container {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.about-text {
+  flex: 1;
+}
+
+/* Placeholder visual para futuro video inmobiliario en formato 16:9. */
+.about-video-placeholder {
+  flex: 1;
+  aspect-ratio: 16 / 9;
+  background: #111;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 500;
+  border-radius: 12px;
+  padding: 1rem;
+}
 
 @media (min-width: 768px) {
   .menu-toggle { display: none; }
@@ -267,6 +311,11 @@ img { max-width: 100%; display: block; }
   /* Ajuste móvil: reducimos altura para conservar proporción y contenido visible */
   .hero {
     height: 86vh;
+  }
+
+  /* En móvil apilamos contenido de Nosotros para legibilidad y flujo natural. */
+  .about-container {
+    flex-direction: column;
   }
 }
 

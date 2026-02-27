@@ -15,6 +15,44 @@ const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1560518883-ce09059e
 const getPrimaryImage = (property) =>
   Array.isArray(property.images) && property.images[0] ? property.images[0] : PLACEHOLDER_IMAGE;
 
+// Animación profesional de cards con GSAP + ScrollTrigger.
+// Se invoca después de cada render dinámico para animar entrada y salida al hacer scroll.
+const setupPropertyCardAnimations = () => {
+  if (!window.gsap || !window.ScrollTrigger) {
+    return;
+  }
+
+  const { gsap, ScrollTrigger } = window;
+  gsap.registerPlugin(ScrollTrigger);
+
+  ScrollTrigger.getAll().forEach((trigger) => {
+    if (trigger.vars?.id?.startsWith('property-cards-')) {
+      trigger.kill();
+    }
+  });
+
+  document.querySelectorAll('.property-section').forEach((section, index) => {
+    const cards = section.querySelectorAll('.property-card');
+    if (!cards.length) {
+      return;
+    }
+
+    gsap.from(cards, {
+      y: 50,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.2,
+      ease: 'power3.out',
+      scrollTrigger: {
+        id: `property-cards-${index}`,
+        trigger: section,
+        start: 'top 85%',
+        toggleActions: 'play reverse play reverse'
+      }
+    });
+  });
+};
+
 const normalizeProperty = (property) => {
   const latitude = Number(property.latitude ?? property.lat);
   const longitude = Number(property.longitude ?? property.lng);
@@ -64,7 +102,7 @@ const createPropertyCard = (property) => {
   const locationText = property.address ? `${property.address}, ${property.city}` : property.location;
 
   return `
-    <article class="property-card reveal ${property.status === 'sold' ? 'property-card-sold' : ''}">
+    <article class="property-card ${property.status === 'sold' ? 'property-card-sold' : ''}">
       <img src="${getPrimaryImage(property)}" alt="${property.title}" loading="lazy" />
       <div class="property-content">
         <p class="property-chip">${property.type}</p>
@@ -132,6 +170,8 @@ const setupHomeSections = async () => {
   if (opportunitiesNode) {
     opportunitiesNode.innerHTML = properties.filter((property) => property.opportunity).slice(0, 3).map(createPropertyCard).join('');
   }
+
+  setupPropertyCardAnimations();
 };
 
 const setupPropertiesPage = async () => {
@@ -180,6 +220,7 @@ const setupPropertiesPage = async () => {
 
     listingNode.innerHTML = filtered.map(createPropertyCard).join('');
     resultCount.textContent = `${filtered.length} propiedad(es) encontrada(s)`;
+    setupPropertyCardAnimations();
     console.debug('[XARCON] Properties page filter result:', {
       total: properties.length,
       filtered: filtered.length,
