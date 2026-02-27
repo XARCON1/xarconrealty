@@ -122,7 +122,7 @@ const createPropertyCard = (property) => {
 };
 
 
-// Slider premium automático con profundidad visual y título animado.
+// Slider tipo cinta con loop continuo y títulos sincronizados cada 3 segundos.
 const setupLuxuryDynamicPropertiesSlider = () => {
   const dynamicSection = document.querySelector('.luxury-dynamic-properties');
   if (!dynamicSection) {
@@ -130,9 +130,8 @@ const setupLuxuryDynamicPropertiesSlider = () => {
   }
 
   const title = dynamicSection.querySelector('.luxury-title');
-  const slides = [...dynamicSection.querySelectorAll('.luxury-slide')];
-
-  if (!title || slides.length === 0) {
+  const sliderTrack = dynamicSection.querySelector('.luxury-slider-track');
+  if (!title || !sliderTrack) {
     return;
   }
 
@@ -143,36 +142,25 @@ const setupLuxuryDynamicPropertiesSlider = () => {
     'Espacios diseñados para ti'
   ];
 
-  let currentIndex = 0;
-
-  // Renderiza la posición del carrusel usando transform para mejor rendimiento.
-  const renderSlider = () => {
-    const offset = `-${currentIndex * 100}%`;
-    slides.forEach((slide, index) => {
-      slide.classList.toggle('active', index === currentIndex);
-      slide.style.transform = `translateX(${offset}) ${index === currentIndex ? 'scale(1.05)' : 'scale(1)'}`;
-    });
-  };
-
-  const nextSlide = () => {
-    slides[currentIndex].classList.remove('active');
-    currentIndex = (currentIndex + 1) % slides.length;
-    slides[currentIndex].classList.add('active');
-
+  let titleIndex = 0;
+  window.setInterval(() => {
     title.style.opacity = '0';
-    title.style.transform = 'translateY(10px)';
 
     window.setTimeout(() => {
-      title.textContent = titles[currentIndex % titles.length];
+      titleIndex = (titleIndex + 1) % titles.length;
+      title.textContent = titles[titleIndex];
       title.style.opacity = '1';
-      title.style.transform = 'translateY(0)';
     }, 400);
+  }, 3000);
 
-    renderSlider();
-  };
-
-  renderSlider();
-  window.setInterval(nextSlide, 5000);
+  // Reinicia la animación al cambiar visibilidad para mantener fluidez sin afectar otras secciones.
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      sliderTrack.style.animation = 'none';
+      void sliderTrack.offsetWidth;
+      sliderTrack.style.animation = '';
+    }
+  });
 };
 
 const setupMenuAndYear = () => {
