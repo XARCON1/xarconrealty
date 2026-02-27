@@ -122,35 +122,17 @@ const createPropertyCard = (property) => {
 };
 
 
-// Fondo sólido dinámico para la sección destacada sin imágenes ni slider.
-const setupFeaturedBackgroundColors = () => {
-  const section = document.querySelector('.featured-properties');
-  if (!section) {
-    return;
-  }
-
-  const colors = ['#0f172a', '#1e293b', '#111827', '#0c1b2a'];
-  let index = 0;
-
-  section.style.backgroundColor = colors[index];
-
-  window.setInterval(() => {
-    index = (index + 1) % colors.length;
-    section.style.backgroundColor = colors[index];
-  }, 6000);
-};
-
-// Slider horizontal automático con cambio dinámico de título para la nueva sección.
-const setupDynamicPropertiesSlider = () => {
-  const dynamicSection = document.querySelector('.dynamic-properties');
+// Slider premium automático con profundidad visual y título animado.
+const setupLuxuryDynamicPropertiesSlider = () => {
+  const dynamicSection = document.querySelector('.luxury-dynamic-properties');
   if (!dynamicSection) {
     return;
   }
 
-  const titleElement = dynamicSection.querySelector('.dynamic-title');
-  const slides = [...dynamicSection.querySelectorAll('.slide')];
+  const title = dynamicSection.querySelector('.luxury-title');
+  const slides = [...dynamicSection.querySelectorAll('.luxury-slide')];
 
-  if (!titleElement || slides.length === 0) {
+  if (!title || slides.length === 0) {
     return;
   }
 
@@ -161,33 +143,36 @@ const setupDynamicPropertiesSlider = () => {
     'Espacios diseñados para ti'
   ];
 
-  let titleIndex = 0;
-  let activeSlide = 0;
+  let currentIndex = 0;
 
-  const renderSlide = () => {
-    const previousSlide = activeSlide;
-    activeSlide = (activeSlide + 1) % slides.length;
-
+  // Renderiza la posición del carrusel usando transform para mejor rendimiento.
+  const renderSlider = () => {
+    const offset = `-${currentIndex * 100}%`;
     slides.forEach((slide, index) => {
-      slide.classList.toggle('active', index === activeSlide);
-      slide.classList.toggle('prev', index === previousSlide && previousSlide !== activeSlide);
+      slide.classList.toggle('active', index === currentIndex);
+      slide.style.transform = `translateX(${offset}) ${index === currentIndex ? 'scale(1.05)' : 'scale(1)'}`;
     });
   };
 
-  const renderTitle = () => {
-    titleElement.classList.add('is-transitioning');
+  const nextSlide = () => {
+    slides[currentIndex].classList.remove('active');
+    currentIndex = (currentIndex + 1) % slides.length;
+    slides[currentIndex].classList.add('active');
+
+    title.style.opacity = '0';
+    title.style.transform = 'translateY(10px)';
 
     window.setTimeout(() => {
-      titleIndex = (titleIndex + 1) % titles.length;
-      titleElement.textContent = titles[titleIndex];
-      titleElement.classList.remove('is-transitioning');
-    }, 280);
+      title.textContent = titles[currentIndex % titles.length];
+      title.style.opacity = '1';
+      title.style.transform = 'translateY(0)';
+    }, 400);
+
+    renderSlider();
   };
 
-  window.setInterval(() => {
-    renderSlide();
-    renderTitle();
-  }, 5000);
+  renderSlider();
+  window.setInterval(nextSlide, 5000);
 };
 
 const setupMenuAndYear = () => {
@@ -402,8 +387,7 @@ const setupPropertyDetail = async () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   setupMenuAndYear();
-  setupFeaturedBackgroundColors();
-  setupDynamicPropertiesSlider();
+  setupLuxuryDynamicPropertiesSlider();
 
   try {
     await Promise.all([setupHomeSections(), setupPropertiesPage(), setupPropertyDetail()]);
