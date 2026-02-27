@@ -227,6 +227,33 @@ img { max-width: 100%; display: block; }
 .price { color: var(--color-accent); font-weight: 800; margin: 0.35rem 0; }
 .location { color: var(--color-muted); font-size: 0.95rem; margin-top: 0; }
 
+/*
+  Glassmorphism exclusivo para las cards de propiedades destacadas.
+  Mantiene el fondo deslizante visible sin tocar hero/video ni otras secciones.
+*/
+.property-section-featured .property-card {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+
+/* Refuerzo de contraste para mantener legibilidad sobre fondo animado. */
+.property-section-featured .property-content h3,
+.property-section-featured .price,
+.property-section-featured .location,
+.property-section-featured .property-meta {
+  color: #fff;
+}
+
+.property-section-featured .property-chip {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
 .filter-panel {
   display: grid;
   grid-template-columns: 1fr;
