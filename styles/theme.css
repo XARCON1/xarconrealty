@@ -9,7 +9,6 @@
   --primary-strong-color: #971627;
   --hero-overlay-start: rgba(11, 19, 33, 0.74);
   --hero-overlay-end: rgba(11, 19, 33, 0.4);
-  --hero-poster-image: url('https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1900&q=80');
   --shadow-color: rgba(19, 32, 53, 0.08);
   --nav-bg: rgba(255, 255, 255, 0.95);
   --chip-bg: #f3e5e8;
@@ -91,14 +90,6 @@ select {
 .admin-map-fallback,
 .admin-property-map {
   background: var(--surface-color);
-}
-
-.hero {
-  background-image: var(--hero-poster-image);
-}
-
-.hero-overlay {
-  background: linear-gradient(90deg, var(--hero-overlay-start), var(--hero-overlay-end));
 }
 
 .hero-search input,

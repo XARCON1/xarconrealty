@@ -47,15 +47,15 @@
 
   <main>
     <section class="hero">
-      <!-- Video inmobiliario de fondo: autoplay, mute, loop y reproducción inline para móviles -->
-      <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1900&q=80" aria-hidden="true">
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-modern-house-in-the-middle-of-a-forest-29683-large.mp4" type="video/mp4" />
+      <!-- Video local como fondo del hero para una presencia visual más profesional -->
+      <video autoplay muted loop playsinline class="hero-video">
+        <source src="assets/inmobiliaria.mp4" type="video/mp4">
       </video>
 
-      <!-- Capa oscura para mantener contraste y legibilidad del contenido principal -->
-      <div class="hero-overlay" aria-hidden="true"></div>
+      <!-- Overlay oscuro para mejorar la legibilidad del texto sobre el video -->
+      <div class="hero-overlay"></div>
 
-      <!-- Contenido principal existente del hero (título, copy y buscador) -->
+      <!-- Contenido principal del hero por encima del video y overlay -->
       <div class="container hero-content reveal">
         <p class="hero-tag">Confianza inmobiliaria en Nicaragua</p>
         <h1>Tu próximo hogar o inversión empieza con una búsqueda inteligente</h1>
