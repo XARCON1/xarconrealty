@@ -139,43 +139,13 @@ img { max-width: 100%; display: block; }
 
 .property-grid { display: grid; gap: 1.2rem; }
 
-/* Slider de fondo exclusivo para la sección destacada de propiedades en home. */
+/* Sección destacada con fondo sólido dinámico y transición suave. */
 .property-section-featured {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.property-section-featured .background-slider {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-
-/* Overlay oscuro local para conservar legibilidad sin tocar el hero. */
-.property-section-featured .background-slider::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(9, 14, 25, 0.62);
-}
-
-.property-section-featured .slide {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-}
-
-.property-section-featured .slide.active {
-  opacity: 1;
+  background-color: #0f172a;
+  transition: background-color 1.5s ease-in-out;
 }
 
 .property-section-featured > .property-content {
-  position: relative;
-  z-index: 2;
   padding: 0;
 }
 
@@ -232,10 +202,10 @@ img { max-width: 100%; display: block; }
   Mantiene el fondo deslizante visible sin tocar hero/video ni otras secciones.
 */
 .property-section-featured .property-card {
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   color: #fff;
@@ -252,6 +222,62 @@ img { max-width: 100%; display: block; }
 .property-section-featured .property-chip {
   background: rgba(255, 255, 255, 0.18);
   color: #fff;
+}
+
+
+.dynamic-properties {
+  background: linear-gradient(145deg, #f8fbff 0%, #eef3fb 100%);
+}
+
+.dynamic-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #0f172a;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.dynamic-title.is-transitioning {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.slider-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  min-height: 280px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+  background: #dbe4f2;
+}
+
+.slider-track {
+  position: relative;
+  min-height: 280px;
+}
+
+.dynamic-properties .slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.dynamic-properties .slide.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.dynamic-properties .slide.prev {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.dynamic-properties .slide img {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  object-fit: cover;
 }
 
 .filter-panel {
@@ -362,6 +388,19 @@ img { max-width: 100%; display: block; }
   padding: 1rem;
 }
 
+
+@media (max-width: 767px) {
+  .dynamic-title {
+    font-size: 1.6rem;
+  }
+
+  .slider-container,
+  .slider-track,
+  .dynamic-properties .slide img {
+    min-height: 220px;
+  }
+}
+
 @media (min-width: 768px) {
   .menu-toggle { display: none; }
   .nav-links {
@@ -402,6 +441,7 @@ img { max-width: 100%; display: block; }
   .property-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .filter-panel { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
+
 
 .detail-map {
   min-height: 280px;

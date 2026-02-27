@@ -122,28 +122,72 @@ const createPropertyCard = (property) => {
 };
 
 
-// Slider automático del fondo en la sección destacada de propiedades (home).
-// Está aislado por selector para no interferir con el hero ni con otras secciones.
-const setupPropertyBackgroundSlider = () => {
-  const featuredSection = document.querySelector('.property-section-featured');
-  if (!featuredSection) {
+// Fondo sólido dinámico para la sección destacada sin imágenes ni slider.
+const setupFeaturedBackgroundColors = () => {
+  const section = document.querySelector('.featured-properties');
+  if (!section) {
     return;
   }
 
-  const slides = featuredSection.querySelectorAll('.background-slider .slide');
-  if (slides.length < 2) {
+  const colors = ['#0f172a', '#1e293b', '#111827', '#0c1b2a'];
+  let index = 0;
+
+  section.style.backgroundColor = colors[index];
+
+  window.setInterval(() => {
+    index = (index + 1) % colors.length;
+    section.style.backgroundColor = colors[index];
+  }, 6000);
+};
+
+// Slider horizontal automático con cambio dinámico de título para la nueva sección.
+const setupDynamicPropertiesSlider = () => {
+  const dynamicSection = document.querySelector('.dynamic-properties');
+  if (!dynamicSection) {
     return;
   }
 
-  let current = 0;
+  const titleElement = dynamicSection.querySelector('.dynamic-title');
+  const slides = [...dynamicSection.querySelectorAll('.slide')];
 
-  const nextSlide = () => {
-    slides[current].classList.remove('active');
-    current = (current + 1) % slides.length;
-    slides[current].classList.add('active');
+  if (!titleElement || slides.length === 0) {
+    return;
+  }
+
+  const titles = [
+    'Encuentra tu hogar ideal',
+    'Propiedades que inspiran',
+    'Invierte con confianza',
+    'Espacios diseñados para ti'
+  ];
+
+  let titleIndex = 0;
+  let activeSlide = 0;
+
+  const renderSlide = () => {
+    const previousSlide = activeSlide;
+    activeSlide = (activeSlide + 1) % slides.length;
+
+    slides.forEach((slide, index) => {
+      slide.classList.toggle('active', index === activeSlide);
+      slide.classList.toggle('prev', index === previousSlide && previousSlide !== activeSlide);
+    });
   };
 
-  window.setInterval(nextSlide, 5000);
+  const renderTitle = () => {
+    titleElement.classList.add('is-transitioning');
+
+    window.setTimeout(() => {
+      titleIndex = (titleIndex + 1) % titles.length;
+      titleElement.textContent = titles[titleIndex];
+      titleElement.classList.remove('is-transitioning');
+    }, 280);
+  };
+
+  window.setInterval(() => {
+    renderSlide();
+    renderTitle();
+  }, 5000);
 };
 
 const setupMenuAndYear = () => {
@@ -358,7 +402,8 @@ const setupPropertyDetail = async () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   setupMenuAndYear();
-  setupPropertyBackgroundSlider();
+  setupFeaturedBackgroundColors();
+  setupDynamicPropertiesSlider();
 
   try {
     await Promise.all([setupHomeSections(), setupPropertiesPage(), setupPropertyDetail()]);
