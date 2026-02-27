@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Departamentos">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <rect x="180" y="210" width="320" height="540" fill="#94a3b8"/>
+  <rect x="560" y="120" width="420" height="630" fill="#64748b"/>
+  <rect x="1040" y="180" width="380" height="570" fill="#475569"/>
+  <g fill="#e2e8f0" opacity="0.8">
+    <rect x="220" y="260" width="60" height="60"/><rect x="320" y="260" width="60" height="60"/><rect x="420" y="260" width="60" height="60"/>
+    <rect x="220" y="360" width="60" height="60"/><rect x="320" y="360" width="60" height="60"/><rect x="420" y="360" width="60" height="60"/>
+    <rect x="600" y="180" width="70" height="70"/><rect x="720" y="180" width="70" height="70"/><rect x="840" y="180" width="70" height="70"/>
+    <rect x="600" y="300" width="70" height="70"/><rect x="720" y="300" width="70" height="70"/><rect x="840" y="300" width="70" height="70"/>
+  </g>
+  <text x="90" y="120" fill="#f8fafc" font-size="66" font-family="Montserrat, Arial, sans-serif" font-weight="700">Departamentos</text>
+</svg>

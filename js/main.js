@@ -121,6 +121,31 @@ const createPropertyCard = (property) => {
   `;
 };
 
+
+// Slider automático del fondo en la sección destacada de propiedades (home).
+// Está aislado por selector para no interferir con el hero ni con otras secciones.
+const setupPropertyBackgroundSlider = () => {
+  const featuredSection = document.querySelector('.property-section-featured');
+  if (!featuredSection) {
+    return;
+  }
+
+  const slides = featuredSection.querySelectorAll('.background-slider .slide');
+  if (slides.length < 2) {
+    return;
+  }
+
+  let current = 0;
+
+  const nextSlide = () => {
+    slides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('active');
+  };
+
+  window.setInterval(nextSlide, 5000);
+};
+
 const setupMenuAndYear = () => {
   const menuButton = document.querySelector('.menu-toggle');
   const navLinks = document.querySelector('.nav-links');
@@ -333,6 +358,7 @@ const setupPropertyDetail = async () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   setupMenuAndYear();
+  setupPropertyBackgroundSlider();
 
   try {
     await Promise.all([setupHomeSections(), setupPropertiesPage(), setupPropertyDetail()]);

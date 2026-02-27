@@ -73,11 +73,23 @@
       </div>
     </section>
 
-    <section class="section container property-section" id="destacadas">
-      <div class="section-header">
-        <h2>Propiedades destacadas</h2>
+    <section class="section property-section property-section-featured" id="destacadas">
+      <!-- Slider exclusivo de la sección de propiedades; no modifica hero ni su overlay/video -->
+      <div class="background-slider" aria-hidden="true">
+        <div class="slide active" style="background-image: url('assets/images/modern-house.svg');"></div>
+        <div class="slide" style="background-image: url('assets/images/apartment.svg');"></div>
+        <div class="slide" style="background-image: url('assets/images/urban-drone.svg');"></div>
+        <div class="slide" style="background-image: url('assets/images/elegant-interior.svg');"></div>
       </div>
-      <div id="featured-properties" class="property-grid" data-dynamic-error></div>
+
+      <div class="property-content">
+        <div class="container">
+          <div class="section-header">
+            <h2>Propiedades destacadas</h2>
+          </div>
+          <div id="featured-properties" class="property-grid" data-dynamic-error></div>
+        </div>
+      </div>
     </section>
 
     <section class="section section-light property-section">
