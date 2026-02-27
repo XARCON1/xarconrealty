@@ -56,29 +56,33 @@ img { max-width: 100%; display: block; }
 .nav-links a { text-decoration: none; color: var(--color-text); font-weight: 600; padding: 0.5rem 0; }
 .nav-links a.active, .nav-links a:hover { color: var(--color-accent); }
 
+/* Hero con video de fondo a pantalla completa sin afectar el layout actual */
 .hero {
   position: relative;
-  background: url('https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1900&q=80') center/cover;
   color: #fff;
-  min-height: 78vh;
+  height: 100vh;
   display: flex;
   align-items: center;
   overflow: hidden;
 }
 
+/* Video fijado al contenedor para cubrir desktop y móviles */
 .hero-video {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   z-index: 1;
 }
 
+/* Capa oscura para conservar contraste profesional del título y buscador */
 .hero-overlay {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.56), rgba(0, 0, 0, 0.44));
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   z-index: 2;
 }
 
@@ -260,9 +264,9 @@ img { max-width: 100%; display: block; }
 }
 
 @media (max-width: 767px) {
+  /* Ajuste móvil: reducimos altura para conservar proporción y contenido visible */
   .hero {
-    min-height: 86vh;
-    background-position: center;
+    height: 86vh;
   }
 }
 
