@@ -73,21 +73,36 @@
       </div>
     </section>
 
-    <section class="section property-section property-section-featured" id="destacadas">
-      <!-- Slider exclusivo de la sección de propiedades; no modifica hero ni su overlay/video -->
-      <div class="background-slider" aria-hidden="true">
-        <div class="slide active" style="background-image: url('assets/images/modern-house.svg');"></div>
-        <div class="slide" style="background-image: url('assets/images/apartment.svg');"></div>
-        <div class="slide" style="background-image: url('assets/images/urban-drone.svg');"></div>
-        <div class="slide" style="background-image: url('assets/images/elegant-interior.svg');"></div>
-      </div>
-
+    <section class="section property-section property-section-featured featured-properties" id="destacadas">
       <div class="property-content">
         <div class="container">
           <div class="section-header">
             <h2>Propiedades destacadas</h2>
           </div>
           <div id="featured-properties" class="property-grid" data-dynamic-error></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dynamic-properties" aria-label="Slider dinámico de propiedades">
+      <div class="container">
+        <h2 class="dynamic-title">Encuentra tu hogar ideal</h2>
+
+        <div class="slider-container">
+          <div class="slider-track">
+            <article class="slide active">
+              <img src="assets/images/modern-house.svg" alt="Propiedad moderna destacada" loading="lazy" />
+            </article>
+            <article class="slide">
+              <img src="assets/images/apartment.svg" alt="Apartamento de diseño contemporáneo" loading="lazy" />
+            </article>
+            <article class="slide">
+              <img src="assets/images/elegant-interior.svg" alt="Interior elegante para inversión" loading="lazy" />
+            </article>
+            <article class="slide">
+              <img src="assets/images/urban-drone.svg" alt="Vista urbana de propiedad premium" loading="lazy" />
+            </article>
+          </div>
         </div>
       </div>
     </section>
