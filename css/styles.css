@@ -139,10 +139,19 @@ img { max-width: 100%; display: block; }
 
 .property-grid { display: grid; gap: 1.2rem; }
 
-/* Sección destacada con fondo sólido dinámico y transición suave. */
-.property-section-featured {
-  background-color: #0f172a;
-  transition: background-color 1.5s ease-in-out;
+/* Sección destacada premium con degradado animado sobrio y elegante. */
+.featured-properties {
+  position: relative;
+  background: linear-gradient(-45deg, #0f172a, #1e293b, #111827, #0c1b2a);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  transition: all 0.5s ease;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .property-section-featured > .property-content {
@@ -153,18 +162,18 @@ img { max-width: 100%; display: block; }
   color: #fff;
 }
 
-/* Cards con microinteracciones fluidas y performantes (transform + opacity). */
+/* Cards base con microinteracciones fluidas y performantes. */
 .property-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow-soft);
-  transition: transform .3s ease, box-shadow .3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   will-change: transform;
 }
 
-/* Elevación más marcada para sensación premium en hover. */
+/* Hover base para cards fuera de la sección destacada. */
 .property-card:hover {
   transform: translateY(-10px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
@@ -198,87 +207,87 @@ img { max-width: 100%; display: block; }
 .location { color: var(--color-muted); font-size: 0.95rem; margin-top: 0; }
 
 /*
-  Glassmorphism exclusivo para las cards de propiedades destacadas.
-  Mantiene el fondo deslizante visible sin tocar hero/video ni otras secciones.
+  Glassmorphism de lujo para cards destacadas con mayor profundidad visual.
+  Mantiene estilo minimalista premium sobre el degradado animado.
 */
-.property-section-featured .property-card {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+.featured-properties .property-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
   color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.featured-properties .property-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
 }
 
 /* Refuerzo de contraste para mantener legibilidad sobre fondo animado. */
-.property-section-featured .property-content h3,
-.property-section-featured .price,
-.property-section-featured .location,
-.property-section-featured .property-meta {
+.featured-properties .property-content h3,
+.featured-properties .price,
+.featured-properties .location,
+.featured-properties .property-meta {
   color: #fff;
 }
 
-.property-section-featured .property-chip {
+.featured-properties .property-chip {
   background: rgba(255, 255, 255, 0.18);
   color: #fff;
 }
 
 
-.dynamic-properties {
+.luxury-dynamic-properties {
   background: linear-gradient(145deg, #f8fbff 0%, #eef3fb 100%);
 }
 
-.dynamic-title {
+.luxury-title {
+  font-size: 2rem;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 30px;
   color: #0f172a;
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.dynamic-title.is-transitioning {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.slider-container {
-  position: relative;
+.luxury-slider {
+  display: flex;
   overflow: hidden;
-  border-radius: 20px;
-  min-height: 280px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
-  background: #dbe4f2;
-}
-
-.slider-track {
   position: relative;
-  min-height: 280px;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
 }
 
-.dynamic-properties .slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transform: translateX(100%);
-  transition: opacity 0.8s ease, transform 0.8s ease;
+.luxury-slide {
+  min-width: 100%;
+  height: 400px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: transform 1s ease, opacity 1s ease;
+  opacity: 0.7;
+  transform: scale(1);
 }
 
-.dynamic-properties .slide.active {
+.luxury-slide.active {
   opacity: 1;
-  transform: translateX(0);
+  transform: scale(1.05);
 }
 
-.dynamic-properties .slide.prev {
-  opacity: 0;
-  transform: translateX(-100%);
+.luxury-slide:nth-child(1) {
+  background-image: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.25)), url('../assets/images/modern-house.svg');
 }
 
-.dynamic-properties .slide img {
-  width: 100%;
-  height: 100%;
-  min-height: 280px;
-  object-fit: cover;
+.luxury-slide:nth-child(2) {
+  background-image: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.25)), url('../assets/images/apartment.svg');
 }
+
+.luxury-slide:nth-child(3) {
+  background-image: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.25)), url('../assets/images/elegant-interior.svg');
+}
+
 
 .filter-panel {
   display: grid;
@@ -390,14 +399,12 @@ img { max-width: 100%; display: block; }
 
 
 @media (max-width: 767px) {
-  .dynamic-title {
+  .luxury-title {
     font-size: 1.6rem;
   }
 
-  .slider-container,
-  .slider-track,
-  .dynamic-properties .slide img {
-    min-height: 220px;
+  .luxury-slide {
+    height: 220px;
   }
 }
 
