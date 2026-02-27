@@ -136,7 +136,53 @@ img { max-width: 100%; display: block; }
 .page-intro h1, .section h2 { margin: 0 0 0.8rem; line-height: 1.2; }
 .section-header { margin-bottom: 1.2rem; }
 
+
 .property-grid { display: grid; gap: 1.2rem; }
+
+/* Slider de fondo exclusivo para la sección destacada de propiedades en home. */
+.property-section-featured {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.property-section-featured .background-slider {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Overlay oscuro local para conservar legibilidad sin tocar el hero. */
+.property-section-featured .background-slider::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(9, 14, 25, 0.62);
+}
+
+.property-section-featured .slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.property-section-featured .slide.active {
+  opacity: 1;
+}
+
+.property-section-featured > .property-content {
+  position: relative;
+  z-index: 2;
+  padding: 0;
+}
+
+.property-section-featured h2 {
+  color: #fff;
+}
+
 /* Cards con microinteracciones fluidas y performantes (transform + opacity). */
 .property-card {
   background: var(--color-surface);
